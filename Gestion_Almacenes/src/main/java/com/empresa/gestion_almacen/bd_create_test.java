@@ -1,4 +1,4 @@
-package com.empresa.inventario;
+package com.empresa.gestion_almacen;
 
 import java.sql.DriverManager;
 import java.sql.SQLException;

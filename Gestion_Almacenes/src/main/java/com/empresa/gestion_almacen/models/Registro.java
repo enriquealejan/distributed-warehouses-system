@@ -1,20 +1,24 @@
 package com.empresa.gestion_almacen.models;
 
-public class Registro {
-    private int id;
-    private int idProducto;
-    private int idAlmacen;
-    private int cantidad;
-    private String fecha;
+import jakarta.persistence.*;
+import java.time.LocalDateTime;
 
-    // Constructor
-    public Registro(int id, int idProducto, int idAlmacen, int cantidad, String fecha) {
-        this.id = id;
-        this.idProducto = idProducto;
-        this.idAlmacen = idAlmacen;
-        this.cantidad = cantidad;
-        this.fecha = fecha;
-    }
+@Entity
+@Table(name = "registros")
+public class Registro {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // Clave primaria autogenerada
+    private int id;
+    @ManyToOne
+    @JoinColumn(name = "producto_id", nullable = false) // Relación con Producto
+    private Long idProducto;
+    @Column(name = "tipo_movimiento", nullable = false) // Ejemplo: "ENTRADA", "SALIDA"
+    private String tipoMovimiento;
+    @Column(name = "cantidad", nullable = false) // Cantidad de producto afectado
+    private int cantidad;
+    @Column(name = "fecha_movimiento", nullable = false) // Fecha del movimiento
+    private LocalDateTime fechaMovimiento;
 
     // Getters y Setters
     public int getId() {
@@ -25,20 +29,20 @@ public class Registro {
         this.id = id;
     }
 
-    public int getIdProducto() {
+    public Long getIdProducto() {
         return idProducto;
     }
 
-    public void setIdProducto(int idProducto) {
+    public void setIdProducto(Long idProducto) {
         this.idProducto = idProducto;
     }
 
-    public int getIdAlmacen() {
-        return idAlmacen;
+    public String getTipoMovimiento() {
+        return tipoMovimiento;
     }
 
-    public void setIdAlmacen(int idAlmacen) {
-        this.idAlmacen = idAlmacen;
+    public void setTipoMovimiento(String tipoMovimiento) {
+        this.tipoMovimiento = tipoMovimiento;
     }
 
     public int getCantidad() {
@@ -49,12 +53,12 @@ public class Registro {
         this.cantidad = cantidad;
     }
 
-    public String getFecha() {
-        return fecha;
+    public LocalDateTime getFechaMovimiento() {
+        return fechaMovimiento;
     }
 
-    public void setFecha(String fecha) {
-        this.fecha = fecha;
+    public void setFechaMovimiento(LocalDateTime fechaMovimiento) {
+        this.fechaMovimiento = fechaMovimiento;
     }
 }
 

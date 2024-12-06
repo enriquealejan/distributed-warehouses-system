@@ -68,6 +68,12 @@
             <artifactId>spring-boot-starter-validation</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>com.rabbitmq</groupId>
+            <artifactId>amqp-client</artifactId>
+            <version>5.16.0</version> <!-- Usa la versión más reciente disponible -->
+        </dependency>
+
     </dependencies>
 
     <!-- Plugins de construcción de Maven -->

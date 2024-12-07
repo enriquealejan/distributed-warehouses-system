@@ -25,8 +25,9 @@ public class ProductoController {
     }
 
     @PutMapping("/{id}")
-    public Producto updateProducto(@PathVariable Long id, @RequestBody Producto producto) {
-        Producto existente = productoRepository.findById(id).orElseThrow();
+    public Producto updateProducto(@PathVariable String id, @RequestBody Producto producto) {
+        Producto existente = productoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Producto no encontrado con ID: " + id));
         existente.setNombre(producto.getNombre());
         existente.setDescripcion(producto.getDescripcion());
         existente.setStock(producto.getStock());

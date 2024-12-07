@@ -24,24 +24,19 @@
 
     <dependencies>
 
+        <!-- Starter de Spring Boot Web -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
-        <!-- Starter de Spring Data JPA: para interactuar con bases de datos -->
+        <!-- Starter de Spring Data MongoDB -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-jpa</artifactId>
+            <artifactId>spring-boot-starter-data-mongodb</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>org.xerial</groupId>
-            <artifactId>sqlite-jdbc</artifactId>
-            <version>3.47.0.0</version> <!-- Usa la versión más reciente si es necesario -->
-        </dependency>
-
-        <!-- Starter de Spring Boot Test: para pruebas unitarias -->
+        <!-- Starter de Spring Boot Test -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
@@ -62,16 +57,17 @@
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
 
-        <!-- Starter de Spring Boot Validation (opcional: validación de datos) -->
+        <!-- Starter de Spring Boot Validation -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-validation</artifactId>
         </dependency>
 
+        <!-- Dependencia para RabbitMQ -->
         <dependency>
             <groupId>com.rabbitmq</groupId>
             <artifactId>amqp-client</artifactId>
-            <version>5.18.0</version> <!-- Usa la versión más reciente disponible -->
+            <version>5.18.0</version>
         </dependency>
 
     </dependencies>

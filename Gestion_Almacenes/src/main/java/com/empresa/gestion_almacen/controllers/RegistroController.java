@@ -37,13 +37,13 @@ public class RegistroController {
 
     // 3. Obtener registros por ID de producto
     @GetMapping("/producto/{productoId}")
-    public List<Registro> getRegistrosByProductoId(@PathVariable Long productoId) {
+    public List<Registro> getRegistrosByProductoId(@PathVariable String productoId) {
         return registroRepository.findByProductoId(productoId);
     }
 
     // 4. Eliminar un registro
     @DeleteMapping("/{id}")
-    public void deleteRegistro(@PathVariable Long id) {
+    public void deleteRegistro(@PathVariable String id) {
         Registro registro = registroRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Registro no encontrado con ID: " + id));
         registroRepository.delete(registro);

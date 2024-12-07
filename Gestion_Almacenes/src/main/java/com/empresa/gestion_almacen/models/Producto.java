@@ -1,44 +1,44 @@
 package com.empresa.gestion_almacen.models;
 
-import jakarta.persistence.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
+
 import java.util.ArrayList;
 import java.util.List;
 
-@Entity
-@Table(name = "productos") // Nombre personalizado para la tabla
+@Document(collection = "productos") // Nombre de la colección en MongoDB
 public class Producto {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // Clave primaria autogenerada
-    private Long id;
+    private String id; // MongoDB usa identificadores tipo String
 
-    @Column(name = "nombre_producto", nullable = false, length = 100) // Nombre del producto
+    @Field("nombre_producto") // Nombre del campo en la colección
     private String nombre;
 
-    @Column(name = "descripcion", length = 255) // Descripción opcional
+    @Field("descripcion")
     private String descripcion;
 
-    @Column(name = "stock", nullable = false) // Cantidad en inventario
+    @Field("stock")
     private int stock;
 
-    @Column(name = "stock_minimo", nullable = false) // Nivel mínimo de stock permitido
+    @Field("stock_minimo")
     private int stockMinimo;
 
-    // Relación con Almacen (Muchos productos pertenecen a un único almacén)
-    @ManyToOne
-    @JoinColumn(name = "almacen_id", nullable = false) // Llave foránea hacia almacén
-    private Almacen almacen;
+    // Relación con Almacen: Referencia por ID
+    @Field("almacen_id")
+    private String almacenId; // Guardamos solo el ID del almacén
 
-    // Relación con Registro (Un producto puede tener múltiples registros de movimientos)
-    @OneToMany(mappedBy = "producto", cascade = CascadeType.ALL, orphanRemoval = true)
+    // Relación con Registro: Lista de registros embebidos
+    @Field("registros")
     private List<Registro> registros = new ArrayList<>();
 
     // Getters y Setters
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -74,12 +74,12 @@ public class Producto {
         this.stockMinimo = stockMinimo;
     }
 
-    public Almacen getAlmacen() {
-        return almacen;
+    public String getAlmacenId() {
+        return almacenId;
     }
 
-    public void setAlmacen(Almacen almacen) {
-        this.almacen = almacen;
+    public void setAlmacenId(String almacenId) {
+        this.almacenId = almacenId;
     }
 
     public List<Registro> getRegistros() {
@@ -90,4 +90,3 @@ public class Producto {
         this.registros = registros;
     }
 }
-

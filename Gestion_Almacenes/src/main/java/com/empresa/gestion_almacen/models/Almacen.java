@@ -1,38 +1,34 @@
 package com.empresa.gestion_almacen.models;
 
-import jakarta.persistence.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
+
 import java.util.ArrayList;
 import java.util.List;
 
-@Entity
-@Table(name = "almacenes")
+@Document(collection = "almacenes") // Nombre de la colección en MongoDB
 public class Almacen {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
-    @Column(name = "nombre_almacen", nullable = false, length = 100)
+    private String id; // MongoDB usa identificadores tipo String
+
+    @Field("nombre")
     private String nombre;
 
-    @Column(name = "ubicacion", length = 255)
-    private String direccion;
+    @Field("ubicacion")
+    private String ubicacion;
 
-   /* // Constructor
-    public Almacen(int id, String nombre, String direccion) {
-        this.id = id;
-        this.nombre = nombre;
-        this.direccion = direccion;
-    }*/
-
-    @OneToMany(mappedBy = "almacen", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Producto> productos = new ArrayList<>();
+    // Relación con Producto: Referencias por ID
+    @Field("productos_ids")
+    private List<String> productosIds = new ArrayList<>(); // IDs de productos relacionados
 
     // Getters y Setters
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -44,21 +40,19 @@ public class Almacen {
         this.nombre = nombre;
     }
 
-    public String getDireccion() {
-        return direccion;
+    public String getUbicacion() {
+        return ubicacion;
     }
 
-    public void setDireccion(String direccion) {
-        this.direccion = direccion;
+    public void setUbicacion(String ubicacion) {
+        this.ubicacion = ubicacion;
     }
 
-    public List<Producto> getProductos() {
-        return productos;
+    public List<String> getProductosIds() {
+        return productosIds;
     }
 
-    public void setProductos(List<Producto> productos) {
-        this.productos = productos;
+    public void setProductosIds(List<String> productosIds) {
+        this.productosIds = productosIds;
     }
 }
-
-

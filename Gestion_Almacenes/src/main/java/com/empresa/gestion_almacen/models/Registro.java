@@ -1,39 +1,43 @@
 package com.empresa.gestion_almacen.models;
 
-import jakarta.persistence.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
+
 import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "registros")
+@Document(collection = "registros") // Nombre de la colección en MongoDB
 public class Registro {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // Clave primaria autogenerada
-    private int id;
-    @ManyToOne
-    @JoinColumn(name = "producto_id", nullable = false) // Relación con Producto
-    private Long idProducto;
-    @Column(name = "tipo_movimiento", nullable = false) // Ejemplo: "ENTRADA", "SALIDA"
+    private String id; // MongoDB usa identificadores tipo String
+
+    @Field("producto_id") // Referencia al producto por ID
+    private String idProducto;
+
+    @Field("tipo_movimiento") // Ejemplo: "ENTRADA", "SALIDA"
     private String tipoMovimiento;
-    @Column(name = "cantidad", nullable = false) // Cantidad de producto afectado
+
+    @Field("cantidad") // Cantidad de producto afectado
     private int cantidad;
-    @Column(name = "fecha_movimiento", nullable = false) // Fecha del movimiento
+
+    @Field("fecha_movimiento") // Fecha del movimiento
     private LocalDateTime fechaMovimiento;
 
     // Getters y Setters
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 
-    public Long getIdProducto() {
+    public String getIdProducto() {
         return idProducto;
     }
 
-    public void setIdProducto(Long idProducto) {
+    public void setIdProducto(String idProducto) {
         this.idProducto = idProducto;
     }
 
@@ -61,5 +65,3 @@ public class Registro {
         this.fechaMovimiento = fechaMovimiento;
     }
 }
-
-

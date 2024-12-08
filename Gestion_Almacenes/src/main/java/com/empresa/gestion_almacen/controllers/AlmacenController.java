@@ -27,15 +27,15 @@ public class AlmacenController {
 
     // 3. Obtener un almacén por su ID
     @GetMapping("/{id}")
-    public Almacen getAlmacenById(@PathVariable Long id) {
-        return almacenRepository.findById("" + id)
+    public Almacen getAlmacenById(@PathVariable String id) {
+        return almacenRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Almacén no encontrado con ID: " + id));
     }
 
     // 4. Actualizar un almacén existente
     @PutMapping("/{id}")
-    public Almacen updateAlmacen(@PathVariable Long id, @RequestBody Almacen almacenDetalles) {
-        Almacen almacen = almacenRepository.findById("" + id)
+    public Almacen updateAlmacen(@PathVariable String id, @RequestBody Almacen almacenDetalles) {
+        Almacen almacen = almacenRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Almacén no encontrado con ID: " + id));
 
         almacen.setNombre(almacenDetalles.getNombre());
@@ -45,8 +45,8 @@ public class AlmacenController {
 
     // 5. Eliminar un almacén
     @DeleteMapping("/{id}")
-    public void deleteAlmacen(@PathVariable Long id) {
-        Almacen almacen = almacenRepository.findById("" + id)
+    public void deleteAlmacen(@PathVariable String id) {
+        Almacen almacen = almacenRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Almacén no encontrado con ID: " + id));
         almacenRepository.delete(almacen);
     }

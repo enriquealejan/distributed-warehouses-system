@@ -13,7 +13,7 @@ public class Registro {
     private String id; // MongoDB usa identificadores tipo String
 
     @Field("producto_id") // Referencia al producto por ID
-    private String idProducto;
+    private String productoId;
 
     @Field("tipo_movimiento") // Ejemplo: "ENTRADA", "SALIDA"
     private String tipoMovimiento;
@@ -34,11 +34,11 @@ public class Registro {
     }
 
     public String getIdProducto() {
-        return idProducto;
+        return productoId;
     }
 
     public void setIdProducto(String idProducto) {
-        this.idProducto = idProducto;
+        this.productoId = idProducto;
     }
 
     public String getTipoMovimiento() {

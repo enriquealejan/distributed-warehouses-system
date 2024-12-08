@@ -65,14 +65,14 @@
             <artifactId>spring-boot-starter-validation</artifactId>
         </dependency>
 
-        <!-- Dependencia para RabbitMQ -->
+        <!-- Starter de Spring Boot RabbitMQ -->
         <dependency>
-            <groupId>com.rabbitmq</groupId>
-            <artifactId>amqp-client</artifactId>
-            <version>5.18.0</version>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-amqp</artifactId>
         </dependency>
 
     </dependencies>
+
 
     <!-- Plugins de construcción de Maven -->
     <build>

@@ -2,53 +2,42 @@ package com.empresa.gestion_almacen.controllers;
 
 import com.empresa.gestion_almacen.models.Almacen;
 import com.empresa.gestion_almacen.repositories.AlmacenRepository;
+import com.empresa.gestion_almacen.service.Sender;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/almacenes") // Ruta base para los endpoints relacionados con almacenes
+@RequestMapping("/api/almacenes")
 public class AlmacenController {
+
     @Autowired
-    private AlmacenRepository almacenRepository;
+    private Sender sender; // Servicio que envía mensajes a las colas
 
-    // 1. Obtener todos los almacenes
     @GetMapping
-    public List<Almacen> getAllAlmacenes() {
-        return almacenRepository.findAll();
+    public String enviarObtenerAlmacenes() {
+        sender.sendMessage("almacen-get-queue", "Obtener almacenes");
+        return "Solicitud de obtención de almacenes enviada a la cola.";
     }
 
-    // 2. Crear un nuevo almacén
     @PostMapping
-    public Almacen createAlmacen(@RequestBody Almacen almacen) {
-        return almacenRepository.save(almacen);
+    public String enviarCrearAlmacen(@RequestBody Almacen almacen) {
+        sender.sendMessage("almacen-post-queue", almacen);
+        return "Solicitud de creación de almacén enviada a la cola.";
     }
 
-    // 3. Obtener un almacén por su ID
-    @GetMapping("/{id}")
-    public Almacen getAlmacenById(@PathVariable String id) {
-        return almacenRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Almacén no encontrado con ID: " + id));
-    }
-
-    // 4. Actualizar un almacén existente
     @PutMapping("/{id}")
-    public Almacen updateAlmacen(@PathVariable String id, @RequestBody Almacen almacenDetalles) {
-        Almacen almacen = almacenRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Almacén no encontrado con ID: " + id));
-
-        almacen.setNombre(almacenDetalles.getNombre());
-        almacen.setUbicacion(almacenDetalles.getUbicacion());
-        return almacenRepository.save(almacen);
+    public String enviarActualizarAlmacen(@PathVariable String id, @RequestBody Almacen almacen) {
+        almacen.setId(id);
+        sender.sendMessage("almacen-put-queue", almacen);
+        return "Solicitud de actualización de almacén enviada a la cola.";
     }
 
-    // 5. Eliminar un almacén
     @DeleteMapping("/{id}")
-    public void deleteAlmacen(@PathVariable String id) {
-        Almacen almacen = almacenRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Almacén no encontrado con ID: " + id));
-        almacenRepository.delete(almacen);
+    public String enviarEliminarAlmacen(@PathVariable String id) {
+        sender.sendMessage("almacen-delete-queue", id);
+        return "Solicitud de eliminación de almacén enviada a la cola.";
     }
-
 }
+

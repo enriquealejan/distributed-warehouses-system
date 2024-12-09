@@ -2,6 +2,7 @@ package com.empresa.gestion_almacen.controllers;
 
 import com.empresa.gestion_almacen.models.Producto;
 import com.empresa.gestion_almacen.repositories.ProductoRepository;
+import com.empresa.gestion_almacen.service.Sender;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,26 +13,30 @@ import java.util.List;
 public class ProductoController {
 
     @Autowired
-    private ProductoRepository productoRepository;
+    private Sender sender; // Servicio que envía mensajes a las colas
 
     @GetMapping
-    public List<Producto> getAllProductos() {
-        return productoRepository.findAll();
+    public String enviarObtenerProductos() {
+        sender.sendMessage("producto-get-queue", "Obtener productos");
+        return "Solicitud de obtención de productos enviada a la cola.";
     }
 
     @PostMapping
-    public Producto createProducto(@RequestBody Producto producto) {
-        return productoRepository.save(producto);
+    public String enviarCrearProducto(@RequestBody Producto producto) {
+        sender.sendMessage("producto-post-queue", producto);
+        return "Solicitud de creación de producto enviada a la cola.";
     }
 
     @PutMapping("/{id}")
-    public Producto updateProducto(@PathVariable String id, @RequestBody Producto producto) {
-        Producto existente = productoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Producto no encontrado con ID: " + id));
-        existente.setNombre(producto.getNombre());
-        existente.setDescripcion(producto.getDescripcion());
-        existente.setStock(producto.getStock());
-        existente.setStockMinimo(producto.getStockMinimo());
-        return productoRepository.save(existente);
+    public String enviarActualizarProducto(@PathVariable String id, @RequestBody Producto producto) {
+        producto.setId(id);
+        sender.sendMessage("producto-put-queue", producto);
+        return "Solicitud de actualización de producto enviada a la cola.";
+    }
+
+    @DeleteMapping("/{id}")
+    public String enviarEliminarProducto(@PathVariable String id) {
+        sender.sendMessage("producto-delete-queue", id);
+        return "Solicitud de eliminación de producto enviada a la cola.";
     }
 }

@@ -4,49 +4,43 @@ import com.empresa.gestion_almacen.models.Registro;
 import com.empresa.gestion_almacen.models.Producto;
 import com.empresa.gestion_almacen.repositories.RegistroRepository;
 import com.empresa.gestion_almacen.repositories.ProductoRepository;
+import com.empresa.gestion_almacen.service.Sender;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/registros") // Ruta base para los endpoints relacionados con registros
+@RequestMapping("/api/registros")
 public class RegistroController {
-    @Autowired
-    private RegistroRepository registroRepository;
 
     @Autowired
-    private ProductoRepository productoRepository;
+    private Sender sender; // Servicio que envía mensajes a las colas
 
-    // 1. Obtener todos los registros
     @GetMapping
-    public List<Registro> getAllRegistros() {
-        return registroRepository.findAll();
+    public String enviarObtenerRegistros() {
+        sender.sendMessage("registro-get-queue", "Obtener registros");
+        return "Solicitud para obtener registros enviada a la cola.";
     }
 
-    // 2. Crear un nuevo registro
     @PostMapping
-    public Registro createRegistro(@RequestBody Registro registro) {
-        // Validar que el producto asociado exista
-        Producto producto = productoRepository.findById(registro.getIdProducto())
-                .orElseThrow(() -> new RuntimeException("Producto no encontrado con ID: " + registro.getIdProducto()));
-
-        registro.setIdProducto(producto.getId()); // Asociar el producto al registro
-        return registroRepository.save(registro);
+    public String enviarCrearRegistro(@RequestBody Registro registro) {
+        sender.sendMessage("registro-post-queue", registro);
+        return "Solicitud de creación de registro enviada a la cola.";
     }
 
-    // 3. Obtener registros por ID de producto
-    @GetMapping("/producto/{productoId}")
-    public List<Registro> getRegistrosByProductoId(@PathVariable String productoId) {
-        return registroRepository.findByProductoId(productoId);
+    @PutMapping("/{id}")
+    public String enviarActualizarRegistro(@PathVariable String id, @RequestBody Registro registro) {
+        registro.setId(id);
+        sender.sendMessage("registro-put-queue", registro);
+        return "Solicitud de actualización de registro enviada a la cola.";
     }
 
-    // 4. Eliminar un registro
     @DeleteMapping("/{id}")
-    public void deleteRegistro(@PathVariable String id) {
-        Registro registro = registroRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Registro no encontrado con ID: " + id));
-        registroRepository.delete(registro);
+    public String enviarEliminarRegistro(@PathVariable Long id) {
+        sender.sendMessage("registro-delete-queue", id);
+        return "Solicitud de eliminación de registro enviada a la cola.";
     }
-
 }
+
+

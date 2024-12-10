@@ -35,8 +35,12 @@ public class AlmacenController {
     }
 
     @PutMapping("/{id}")
-    public List<Almacen> actualizarAlmacen(@PathVariable String id, @RequestBody AlmacenRequest almacen) {
-        Object response = sender.sendAndReceive("almacen-put-queue", almacen);
+    public List<Almacen> actualizarAlmacen(@PathVariable String id, @RequestBody Almacen almacen) {
+        almacen.setId(id);
+
+        AlmacenRequest almacenRequest = new AlmacenRequest(id, almacen);
+
+        Object response = sender.sendAndReceive("almacen-put-queue", almacenRequest);
         if(response instanceof List<?>) {
             return (List<Almacen>) response;
         }

@@ -35,8 +35,11 @@ public class ProductoController {
     }
 
     @PutMapping("/{id}")
-    public List<Producto> actualizarProducto(@RequestParam String id, @RequestBody ProductoRequest producto) {
-        ProductoRequest productoRequest = new ProductoRequest(producto.getId(), producto.getProducto());
+    public List<Producto> actualizarProducto(@RequestParam String id, @RequestBody Producto producto) {
+        producto.setId(id);
+
+        ProductoRequest productoRequest = new ProductoRequest(id, producto);
+
         Object response = sender.sendAndReceive("producto-put-queue", productoRequest);
         if(response instanceof List<?>) {
             return (List<Producto>) response;

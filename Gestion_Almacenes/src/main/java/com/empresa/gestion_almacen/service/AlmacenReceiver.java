@@ -8,9 +8,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.logging.Logger;
 
 @Service
 public class AlmacenReceiver {
+
+    private static final Logger LOGGER = Logger.getLogger(AlmacenReceiver.class.getName());
 
     @Autowired
     private AlmacenRepository almacenRepository;
@@ -29,19 +33,50 @@ public class AlmacenReceiver {
     }
 
     @RabbitListener(queues = "almacen-put-queue")
-    public List<Almacen> procesarActualizarAlmacen(AlmacenRequest almacen) {
-        String id_almacen = almacen.getId();
-        System.out.println("Actualizando almacén con ID: " + id_almacen);
-        Almacen almac= almacen.getAlmacen();
+    public List<Almacen> procesarActualizarAlmacen(AlmacenRequest almacenRequest) {
+        try {
+            LOGGER.info("Recibiendo solicitud de actualización de almacén");
 
-        Almacen existente = almacenRepository.findById(id_almacen)
-                .orElseThrow(() -> new RuntimeException("Almacén no encontrado con ID: " + id_almacen));
+            // Log the incoming request for debugging
+            LOGGER.info("Almacen Request ID: " + almacenRequest.getId());
+            LOGGER.info("Almacen Details: " + almacenRequest.getAlmacen());
 
-        existente.setNombre(almac.getNombre());
-        existente.setUbicacion(almac.getUbicacion());
-        almacenRepository.save(existente);
-        System.out.println("Almacén actualizado: " + almacen.getId());
-        return almacenRepository.findAll();
+            // Validate input
+            if (almacenRequest.getId() == null || almacenRequest.getAlmacen() == null) {
+                throw new IllegalArgumentException("ID o Almacen no pueden ser nulos");
+            }
+
+            // Find the existing almacen
+            Optional<Almacen> existenteOptional = almacenRepository.findById(almacenRequest.getId());
+
+            if (existenteOptional.isEmpty()) {
+                throw new RuntimeException("Almacén no encontrado con ID: " + almacenRequest.getId());
+            }
+
+            Almacen existente = existenteOptional.get();
+            Almacen nuevoAlmacen = almacenRequest.getAlmacen();
+
+            // Update specific fields
+            existente.setNombre(nuevoAlmacen.getNombre());
+            existente.setUbicacion(nuevoAlmacen.getUbicacion());
+
+            // Only update productosIds if it's not empty
+            if (nuevoAlmacen.getProductosIds() != null && !nuevoAlmacen.getProductosIds().isEmpty()) {
+                existente.setProductosIds(nuevoAlmacen.getProductosIds());
+            }
+
+            // Save the updated almacen
+            almacenRepository.save(existente);
+
+            LOGGER.info("Almacén actualizado exitosamente: " + existente.getId());
+
+            // Return updated list of almacenes
+            return almacenRepository.findAll();
+
+        } catch (Exception e) {
+            LOGGER.severe("Error en procesarActualizarAlmacen: " + e.getMessage());
+            throw new RuntimeException("Error al procesar actualización de almacén", e);
+        }
     }
 
     @RabbitListener(queues = "almacen-delete-queue")

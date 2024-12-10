@@ -13,30 +13,43 @@ import java.util.List;
 public class ProductoController {
 
     @Autowired
-    private Sender sender; // Servicio que envía mensajes a las colas
+    private Sender sender;
 
     @GetMapping
-    public String enviarObtenerProductos() {
-        sender.sendAndReceive("producto-get-queue", "Obtener productos");
-        return "Solicitud de obtención de productos enviada a la cola.";
+    public List<Producto> obtenerProductos() {
+        Object response = sender.sendAndReceive("producto-get-queue", "procesarObtenerProductos");
+        if(response instanceof List<?>) {
+            return (List<Producto>) response;
+        }
+        throw new RuntimeException("Error al obtener productos");
     }
 
     @PostMapping
-    public String enviarCrearProducto(@RequestBody Producto producto) {
-        sender.sendAndReceive("producto-post-queue", producto);
-        return "Solicitud de creación de producto enviada a la cola.";
+    public List<Producto> crearProducto(@RequestBody Producto producto) {
+        Object response = sender.sendAndReceive("producto-post-queue", producto);
+        if(response instanceof List<?>) {
+            return (List<Producto>) response;
+        }
+        throw new RuntimeException("Error al crear producto");
     }
 
     @PutMapping("/{id}")
-    public String enviarActualizarProducto(@PathVariable String id, @RequestBody Producto producto) {
+    public List<Producto> actualizarProducto(@PathVariable String id, @RequestBody Producto producto) {
         producto.setId(id);
-        sender.sendAndReceive("producto-put-queue", producto);
-        return "Solicitud de actualización de producto enviada a la cola.";
+        Object response = sender.sendAndReceive("producto-put-queue", producto);
+        if(response instanceof List<?>) {
+            return (List<Producto>) response;
+        }
+        throw new RuntimeException("Error al actualizar producto");
     }
 
     @DeleteMapping("/{id}")
-    public String enviarEliminarProducto(@PathVariable String id) {
-        sender.sendAndReceive("producto-delete-queue", id);
-        return "Solicitud de eliminación de producto enviada a la cola.";
+    public List<Producto> eliminarProducto(@PathVariable String id) {
+        Object response = sender.sendAndReceive("producto-delete-queue", id);
+        if(response instanceof List<?>) {
+            return (List<Producto>) response;
+        }
+        throw new RuntimeException("Error al eliminar producto");
     }
 }
+

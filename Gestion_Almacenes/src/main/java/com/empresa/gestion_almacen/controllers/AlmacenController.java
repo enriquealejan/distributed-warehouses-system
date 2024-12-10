@@ -36,7 +36,7 @@ public class AlmacenController {
     @PutMapping("/{id}")
     public List<Almacen> actualizarAlmacen(@PathVariable String id, @RequestBody Almacen almacen) {
         almacen.setId(id);
-        Object response = sender.sendAndReceive("almacen-put-queue", "procesarActualizarAlmacen");
+        Object response = sender.sendAndReceive("almacen-put-queue", almacen);
         if(response instanceof List<?>) {
             return (List<Almacen>) response;
         }
@@ -45,7 +45,7 @@ public class AlmacenController {
 
     @DeleteMapping("/{id}")
     public List<Almacen> eliminarAlmacen(@PathVariable String id) {
-        Object response = sender.sendAndReceive("almacen-delete-queue", "procesarEliminarAlmacen");
+        Object response = sender.sendAndReceive("almacen-delete-queue", id);
         if(response instanceof List<?>) {
             return (List<Almacen>) response;
         }

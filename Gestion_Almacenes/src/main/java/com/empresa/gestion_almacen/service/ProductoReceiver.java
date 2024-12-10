@@ -6,6 +6,8 @@ import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class ProductoReceiver {
 
@@ -13,30 +15,34 @@ public class ProductoReceiver {
     private ProductoRepository productoRepository;
 
     @RabbitListener(queues = "producto-get-queue")
-    public void procesarObtenerProductos() {
+    public List<Producto> procesarObtenerProductos() {
         System.out.println("Obteniendo productos...");
-        productoRepository.findAll().forEach(producto -> System.out.println(producto.getNombre()));
+        return productoRepository.findAll();
     }
 
     @RabbitListener(queues = "producto-post-queue")
-    public void procesarCrearProducto(Producto producto) {
+    public List<Producto> procesarCrearProducto(Producto producto) {
         productoRepository.save(producto);
         System.out.println("Producto creado: " + producto.getId());
+        return productoRepository.findAll();
     }
 
     @RabbitListener(queues = "producto-put-queue")
-    public void procesarActualizarProducto(Producto producto) {
+    public List<Producto> procesarActualizarProducto(Producto producto) {
         Producto existente = productoRepository.findById(producto.getId())
                 .orElseThrow(() -> new RuntimeException("Producto no encontrado con ID: " + producto.getId()));
         existente.setNombre(producto.getNombre());
         existente.setStock(producto.getStock());
         productoRepository.save(existente);
         System.out.println("Producto actualizado: " + producto.getId());
+        return productoRepository.findAll();
     }
 
     @RabbitListener(queues = "producto-delete-queue")
-    public void procesarEliminarProducto(String id) {
+    public List<Producto> procesarEliminarProducto(String id) {
         productoRepository.deleteById(id);
         System.out.println("Producto eliminado con ID: " + id);
+        return productoRepository.findAll();
     }
 }
+

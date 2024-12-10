@@ -15,31 +15,43 @@ import java.util.List;
 public class RegistroController {
 
     @Autowired
-    private Sender sender; // Servicio que envía mensajes a las colas
+    private Sender sender;
 
     @GetMapping
-    public String enviarObtenerRegistros() {
-        sender.sendAndReceive("registro-get-queue", "Obtener registros");
-        return "Solicitud para obtener registros enviada a la cola.";
+    public List<Registro> obtenerRegistros() {
+        Object response = sender.sendAndReceive("registro-get-queue", "procesarObtenerRegistros");
+        if(response instanceof List<?>) {
+            return (List<Registro>) response;
+        }
+        throw new RuntimeException("Error al obtener registros");
     }
 
     @PostMapping
-    public String enviarCrearRegistro(@RequestBody Registro registro) {
-        sender.sendAndReceive("registro-post-queue", registro);
-        return "Solicitud de creación de registro enviada a la cola.";
+    public List<Registro> crearRegistro(@RequestBody Registro registro) {
+        Object response = sender.sendAndReceive("registro-post-queue", registro);
+        if(response instanceof List<?>) {
+            return (List<Registro>) response;
+        }
+        throw new RuntimeException("Error al crear registro");
     }
 
     @PutMapping("/{id}")
-    public String enviarActualizarRegistro(@PathVariable String id, @RequestBody Registro registro) {
+    public List<Registro> actualizarRegistro(@PathVariable String id, @RequestBody Registro registro) {
         registro.setId(id);
-        sender.sendAndReceive("registro-put-queue", registro);
-        return "Solicitud de actualización de registro enviada a la cola.";
+        Object response = sender.sendAndReceive("registro-put-queue", registro);
+        if(response instanceof List<?>) {
+            return (List<Registro>) response;
+        }
+        throw new RuntimeException("Error al actualizar registro");
     }
 
     @DeleteMapping("/{id}")
-    public String enviarEliminarRegistro(@PathVariable Long id) {
-        sender.sendAndReceive("registro-delete-queue", id);
-        return "Solicitud de eliminación de registro enviada a la cola.";
+    public List<Registro> eliminarRegistro(@PathVariable String id) {
+        Object response = sender.sendAndReceive("registro-delete-queue", id);
+        if(response instanceof List<?>) {
+            return (List<Registro>) response;
+        }
+        throw new RuntimeException("Error al eliminar registro");
     }
 }
 

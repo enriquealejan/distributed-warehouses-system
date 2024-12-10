@@ -6,6 +6,8 @@ import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class RegistroReceiver {
 
@@ -13,31 +15,34 @@ public class RegistroReceiver {
     private RegistroRepository registroRepository;
 
     @RabbitListener(queues = "registro-get-queue")
-    public void procesarObtenerRegistros() {
+    public List<Registro> procesarObtenerRegistros() {
         System.out.println("Obteniendo registros...");
-        registroRepository.findAll().forEach(registro -> System.out.println(registro.getTipoMovimiento()));
+        return registroRepository.findAll();
     }
 
     @RabbitListener(queues = "registro-post-queue")
-    public void procesarCrearRegistro(Registro registro) {
+    public List<Registro> procesarCrearRegistro(Registro registro) {
         registroRepository.save(registro);
         System.out.println("Registro creado: " + registro.getId());
+        return registroRepository.findAll();
     }
 
     @RabbitListener(queues = "registro-put-queue")
-    public void procesarActualizarRegistro(Registro registro) {
+    public List<Registro> procesarActualizarRegistro(Registro registro) {
         Registro existente = registroRepository.findById(registro.getId())
                 .orElseThrow(() -> new RuntimeException("Registro no encontrado con ID: " + registro.getId()));
-        existente.setTipoMovimiento(registro.getTipoMovimiento());
         existente.setFechaMovimiento(registro.getFechaMovimiento());
+        existente.setTipoMovimiento(registro.getTipoMovimiento());
         registroRepository.save(existente);
         System.out.println("Registro actualizado: " + registro.getId());
+        return registroRepository.findAll();
     }
 
     @RabbitListener(queues = "registro-delete-queue")
-    public void procesarEliminarRegistro(String id) {
+    public List<Registro> procesarEliminarRegistro(String id) {
         registroRepository.deleteById(id);
         System.out.println("Registro eliminado con ID: " + id);
+        return registroRepository.findAll();
     }
 }
 

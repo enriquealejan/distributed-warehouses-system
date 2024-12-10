@@ -1,8 +1,13 @@
 package com.empresa.gestion_almacen.models;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class ProductoRequest {
-    private String id;
-    private Producto producto;
+    @JsonProperty ("id") private String id;
+    @JsonProperty ("producto") private Producto producto;
+
+    public ProductoRequest(){
+    }
     public ProductoRequest(String id, Producto producto){
         this.id = id;
         this.producto = producto;

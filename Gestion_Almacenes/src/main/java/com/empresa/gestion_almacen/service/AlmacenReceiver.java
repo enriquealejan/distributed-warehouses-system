@@ -31,10 +31,12 @@ public class AlmacenReceiver {
     @RabbitListener(queues = "almacen-put-queue")
     public List<Almacen> procesarActualizarAlmacen(AlmacenRequest almacen) {
         String id_almacen = almacen.getId();
+        System.out.println("Actualizando almacén con ID: " + id_almacen);
         Almacen almac= almacen.getAlmacen();
 
         Almacen existente = almacenRepository.findById(id_almacen)
                 .orElseThrow(() -> new RuntimeException("Almacén no encontrado con ID: " + id_almacen));
+
         existente.setNombre(almac.getNombre());
         existente.setUbicacion(almac.getUbicacion());
         almacenRepository.save(existente);

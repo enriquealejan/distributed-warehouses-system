@@ -37,8 +37,8 @@ public class RegistroController {
     }
 
     @PutMapping("/{id}")
-    public List<Registro> actualizarRegistro(@RequestParam String id, @RequestBody Registro registro) {
-        RegistroRequest registroRequest = new RegistroRequest(id, registro);
+    public List<Registro> actualizarRegistro(@PathVariable String id, @RequestBody RegistroRequest registro) {
+        RegistroRequest registroRequest = new RegistroRequest(registro.getId(), registro.getRegistro());
         Object response = sender.sendAndReceive("registro-put-queue", registroRequest);
         if(response instanceof List<?>) {
             return (List<Registro>) response;

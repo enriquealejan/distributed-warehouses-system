@@ -17,26 +17,26 @@ public class ProductoController {
 
     @GetMapping
     public String enviarObtenerProductos() {
-        sender.sendMessage("producto-get-queue", "Obtener productos");
+        sender.sendAndReceive("producto-get-queue", "Obtener productos");
         return "Solicitud de obtención de productos enviada a la cola.";
     }
 
     @PostMapping
     public String enviarCrearProducto(@RequestBody Producto producto) {
-        sender.sendMessage("producto-post-queue", producto);
+        sender.sendAndReceive("producto-post-queue", producto);
         return "Solicitud de creación de producto enviada a la cola.";
     }
 
     @PutMapping("/{id}")
     public String enviarActualizarProducto(@PathVariable String id, @RequestBody Producto producto) {
         producto.setId(id);
-        sender.sendMessage("producto-put-queue", producto);
+        sender.sendAndReceive("producto-put-queue", producto);
         return "Solicitud de actualización de producto enviada a la cola.";
     }
 
     @DeleteMapping("/{id}")
     public String enviarEliminarProducto(@PathVariable String id) {
-        sender.sendMessage("producto-delete-queue", id);
+        sender.sendAndReceive("producto-delete-queue", id);
         return "Solicitud de eliminación de producto enviada a la cola.";
     }
 }

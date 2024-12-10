@@ -19,26 +19,26 @@ public class RegistroController {
 
     @GetMapping
     public String enviarObtenerRegistros() {
-        sender.sendMessage("registro-get-queue", "Obtener registros");
+        sender.sendAndReceive("registro-get-queue", "Obtener registros");
         return "Solicitud para obtener registros enviada a la cola.";
     }
 
     @PostMapping
     public String enviarCrearRegistro(@RequestBody Registro registro) {
-        sender.sendMessage("registro-post-queue", registro);
+        sender.sendAndReceive("registro-post-queue", registro);
         return "Solicitud de creación de registro enviada a la cola.";
     }
 
     @PutMapping("/{id}")
     public String enviarActualizarRegistro(@PathVariable String id, @RequestBody Registro registro) {
         registro.setId(id);
-        sender.sendMessage("registro-put-queue", registro);
+        sender.sendAndReceive("registro-put-queue", registro);
         return "Solicitud de actualización de registro enviada a la cola.";
     }
 
     @DeleteMapping("/{id}")
     public String enviarEliminarRegistro(@PathVariable Long id) {
-        sender.sendMessage("registro-delete-queue", id);
+        sender.sendAndReceive("registro-delete-queue", id);
         return "Solicitud de eliminación de registro enviada a la cola.";
     }
 }

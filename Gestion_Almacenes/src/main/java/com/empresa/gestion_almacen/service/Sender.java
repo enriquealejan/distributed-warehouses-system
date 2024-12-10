@@ -10,8 +10,7 @@ public class Sender {
     @Autowired
     private RabbitTemplate rabbitTemplate;
 
-    public void sendMessage(String queueName, Object message) {
-        rabbitTemplate.convertAndSend(queueName, message);
-        System.out.println("Mensaje enviado a la cola " + queueName + ": " + message);
+    public Object sendAndReceive(String queueName, Object message) {
+        return rabbitTemplate.convertSendAndReceive(queueName, message);
     }
 }

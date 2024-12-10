@@ -16,28 +16,40 @@ public class AlmacenController {
     private Sender sender; // Servicio que envía mensajes a las colas
 
     @GetMapping
-    public String enviarObtenerAlmacenes() {
-        sender.sendMessage("almacen-get-queue", "Obtener almacenes");
-        return "Solicitud de obtención de almacenes enviada a la cola.";
+    public List<Almacen> obtenerAlmacenes() {
+        Object response = sender.sendAndReceive("almacen-get-queue", "procesarObtenerAlmacenes");
+        if(response instanceof List<?>) {
+            return (List<Almacen>) response;
+        }
+        throw new RuntimeException("Error al obtener almacenes");
     }
 
     @PostMapping
-    public String enviarCrearAlmacen(@RequestBody Almacen almacen) {
-        sender.sendMessage("almacen-post-queue", almacen);
-        return "Solicitud de creación de almacén enviada a la cola.";
+    public List<Almacen> crearAlmacen(@RequestBody Almacen almacen) {
+        Object response = sender.sendAndReceive("almacen-post-queue", almacen);
+        if(response instanceof List<?>) {
+            return (List<Almacen>) response;
+        }
+        throw new RuntimeException("Error al crear almacén");
     }
 
     @PutMapping("/{id}")
-    public String enviarActualizarAlmacen(@PathVariable String id, @RequestBody Almacen almacen) {
+    public List<Almacen> actualizarAlmacen(@PathVariable String id, @RequestBody Almacen almacen) {
         almacen.setId(id);
-        sender.sendMessage("almacen-put-queue", almacen);
-        return "Solicitud de actualización de almacén enviada a la cola.";
+        Object response = sender.sendAndReceive("almacen-put-queue", "procesarActualizarAlmacen");
+        if(response instanceof List<?>) {
+            return (List<Almacen>) response;
+        }
+        throw new RuntimeException("Error al actualizar almacén");
     }
 
     @DeleteMapping("/{id}")
-    public String enviarEliminarAlmacen(@PathVariable String id) {
-        sender.sendMessage("almacen-delete-queue", id);
-        return "Solicitud de eliminación de almacén enviada a la cola.";
+    public List<Almacen> eliminarAlmacen(@PathVariable String id) {
+        Object response = sender.sendAndReceive("almacen-delete-queue", "procesarEliminarAlmacen");
+        if(response instanceof List<?>) {
+            return (List<Almacen>) response;
+        }
+        throw new RuntimeException("Error al eliminar almacén");
     }
 }
 

@@ -1,6 +1,7 @@
 package com.empresa.gestion_almacen.controllers;
 
 import com.empresa.gestion_almacen.models.Almacen;
+import com.empresa.gestion_almacen.models.AlmacenRequest;
 import com.empresa.gestion_almacen.repositories.AlmacenRepository;
 import com.empresa.gestion_almacen.service.Sender;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,8 +35,8 @@ public class AlmacenController {
     }
 
     @PutMapping("/{id}")
-    public List<Almacen> actualizarAlmacen(@PathVariable String id, @RequestBody Almacen almacen) {
-        almacen.setId(id);
+    public List<Almacen> actualizarAlmacen(@RequestParam String id, @RequestBody Almacen almacen) {
+        AlmacenRequest almacenRequest = new AlmacenRequest(id, almacen);
         Object response = sender.sendAndReceive("almacen-put-queue", almacen);
         if(response instanceof List<?>) {
             return (List<Almacen>) response;

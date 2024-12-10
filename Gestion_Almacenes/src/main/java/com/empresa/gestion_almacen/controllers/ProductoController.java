@@ -1,6 +1,7 @@
 package com.empresa.gestion_almacen.controllers;
 
 import com.empresa.gestion_almacen.models.Producto;
+import com.empresa.gestion_almacen.models.ProductoRequest;
 import com.empresa.gestion_almacen.repositories.ProductoRepository;
 import com.empresa.gestion_almacen.service.Sender;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,9 +35,9 @@ public class ProductoController {
     }
 
     @PutMapping("/{id}")
-    public List<Producto> actualizarProducto(@PathVariable String id, @RequestBody Producto producto) {
-        producto.setId(id);
-        Object response = sender.sendAndReceive("producto-put-queue", producto);
+    public List<Producto> actualizarProducto(@RequestParam String id, @RequestBody Producto producto) {
+        ProductoRequest productoRequest = new ProductoRequest(id, producto);
+        Object response = sender.sendAndReceive("producto-put-queue", productoRequest);
         if(response instanceof List<?>) {
             return (List<Producto>) response;
         }

@@ -1,6 +1,7 @@
 package com.empresa.gestion_almacen.service;
 
 import com.empresa.gestion_almacen.models.Producto;
+import com.empresa.gestion_almacen.models.ProductoRequest;
 import com.empresa.gestion_almacen.repositories.ProductoRepository;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,11 +29,14 @@ public class ProductoReceiver {
     }
 
     @RabbitListener(queues = "producto-put-queue")
-    public List<Producto> procesarActualizarProducto(Producto producto) {
-        Producto existente = productoRepository.findById(producto.getId())
-                .orElseThrow(() -> new RuntimeException("Producto no encontrado con ID: " + producto.getId()));
-        existente.setNombre(producto.getNombre());
-        existente.setStock(producto.getStock());
+    public List<Producto> procesarActualizarProducto(ProductoRequest producto) {
+        String id_producto = producto.getId();
+        Producto prod= producto.getProducto();
+
+        Producto existente = productoRepository.findById(id_producto)
+                .orElseThrow(() -> new RuntimeException("Producto no encontrado con ID: " + id_producto));
+        existente.setNombre(prod.getNombre());
+        existente.setStock(prod.getStock());
         productoRepository.save(existente);
         System.out.println("Producto actualizado: " + producto.getId());
         return productoRepository.findAll();

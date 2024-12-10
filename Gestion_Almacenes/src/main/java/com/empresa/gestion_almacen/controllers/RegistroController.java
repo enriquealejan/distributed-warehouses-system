@@ -1,6 +1,7 @@
 package com.empresa.gestion_almacen.controllers;
 
 import com.empresa.gestion_almacen.models.Registro;
+import com.empresa.gestion_almacen.models.RegistroRequest;
 import com.empresa.gestion_almacen.models.Producto;
 import com.empresa.gestion_almacen.repositories.RegistroRepository;
 import com.empresa.gestion_almacen.repositories.ProductoRepository;
@@ -36,9 +37,9 @@ public class RegistroController {
     }
 
     @PutMapping("/{id}")
-    public List<Registro> actualizarRegistro(@PathVariable String id, @RequestBody Registro registro) {
-        registro.setId(id);
-        Object response = sender.sendAndReceive("registro-put-queue", registro);
+    public List<Registro> actualizarRegistro(@RequestParam String id, @RequestBody Registro registro) {
+        RegistroRequest registroRequest = new RegistroRequest(id, registro);
+        Object response = sender.sendAndReceive("registro-put-queue", registroRequest);
         if(response instanceof List<?>) {
             return (List<Registro>) response;
         }

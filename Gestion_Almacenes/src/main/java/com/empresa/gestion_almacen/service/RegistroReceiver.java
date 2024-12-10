@@ -1,6 +1,7 @@
 package com.empresa.gestion_almacen.service;
 
 import com.empresa.gestion_almacen.models.Registro;
+import com.empresa.gestion_almacen.models.RegistroRequest;
 import com.empresa.gestion_almacen.repositories.RegistroRepository;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,11 +29,15 @@ public class RegistroReceiver {
     }
 
     @RabbitListener(queues = "registro-put-queue")
-    public List<Registro> procesarActualizarRegistro(Registro registro) {
-        Registro existente = registroRepository.findById(registro.getId())
-                .orElseThrow(() -> new RuntimeException("Registro no encontrado con ID: " + registro.getId()));
-        existente.setFechaMovimiento(registro.getFechaMovimiento());
-        existente.setTipoMovimiento(registro.getTipoMovimiento());
+    public List<Registro> procesarActualizarRegistro(RegistroRequest registro) {
+        // Deserializar el objeto RegistroRequest
+        String id_registro = registro.getId();
+        Registro reg = registro.getRegistro();
+
+        Registro existente = registroRepository.findById(id_registro)
+                .orElseThrow(() -> new RuntimeException("Registro no encontrado con ID: " + id_registro));
+        existente.setFechaMovimiento(reg.getFechaMovimiento());
+        existente.setTipoMovimiento(reg.getTipoMovimiento());
         registroRepository.save(existente);
         System.out.println("Registro actualizado: " + registro.getId());
         return registroRepository.findAll();

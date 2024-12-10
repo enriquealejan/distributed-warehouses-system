@@ -1,6 +1,7 @@
 package com.empresa.gestion_almacen.service;
 
 import com.empresa.gestion_almacen.models.Almacen;
+import com.empresa.gestion_almacen.models.AlmacenRequest;
 import com.empresa.gestion_almacen.repositories.AlmacenRepository;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,11 +29,14 @@ public class AlmacenReceiver {
     }
 
     @RabbitListener(queues = "almacen-put-queue")
-    public List<Almacen> procesarActualizarAlmacen(Almacen almacen) {
-        Almacen existente = almacenRepository.findById(almacen.getId())
-                .orElseThrow(() -> new RuntimeException("Almacén no encontrado con ID: " + almacen.getId()));
-        existente.setNombre(almacen.getNombre());
-        existente.setUbicacion(almacen.getUbicacion());
+    public List<Almacen> procesarActualizarAlmacen(AlmacenRequest almacen) {
+        String id_almacen = almacen.getId();
+        Almacen almac= almacen.getAlmacen();
+
+        Almacen existente = almacenRepository.findById(id_almacen)
+                .orElseThrow(() -> new RuntimeException("Almacén no encontrado con ID: " + id_almacen));
+        existente.setNombre(almac.getNombre());
+        existente.setUbicacion(almac.getUbicacion());
         almacenRepository.save(existente);
         System.out.println("Almacén actualizado: " + almacen.getId());
         return almacenRepository.findAll();

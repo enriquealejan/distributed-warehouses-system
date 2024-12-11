@@ -36,7 +36,7 @@ public class RegistroReceiver {
     @RabbitListener(queues = "registro-put-queue")
     public List<Registro> procesarActualizarRegistro(RegistroRequest registroRequest) {
         try{
-            LOGGER.info("Recibiendo solicitud de actualización de producto");
+            LOGGER.info("Recibiendo solicitud de actualización de registro");
 
             // Log the incoming request for debugging
             LOGGER.info("Registro Request ID: " + registroRequest.getId());
@@ -44,14 +44,14 @@ public class RegistroReceiver {
 
             // Validate input
             if (registroRequest.getId() == null || registroRequest.getRegistro() == null) {
-                throw new IllegalArgumentException("ID o Producto no pueden ser nulos");
+                throw new IllegalArgumentException("ID o Registro no pueden ser nulos");
             }
 
-            // Find the existing producto
+            // Find the existing registro
             Optional<Registro> existenteOptional = registroRepository.findById(registroRequest.getId());
 
             if (existenteOptional.isEmpty()) {
-                throw new RuntimeException("Almacén no encontrado con ID: " + registroRequest.getId());
+                throw new RuntimeException("Registro no encontrado con ID: " + registroRequest.getId());
             }
 
             Registro existente = existenteOptional.get();
@@ -62,12 +62,12 @@ public class RegistroReceiver {
             existente.setCantidad(nuevoRegistro.getCantidad());
             existente.setFechaMovimiento(nuevoRegistro.getFechaMovimiento());
 
-            // Save the updated producto
+            // Save the updated registro
             registroRepository.save(existente);
 
-            LOGGER.info("Producto actualizado exitosamente: " + existente.getId());
+            LOGGER.info("Registro actualizado exitosamente: " + existente.getId());
 
-            // Return updated list of productos
+            // Return updated list of registros
             return registroRepository.findAll();
 
         }catch(Exception e){

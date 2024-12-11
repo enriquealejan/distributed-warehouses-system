@@ -35,7 +35,7 @@ public class ProductoController {
     }
 
     @PutMapping("/{id}")
-    public List<Producto> actualizarProducto(@RequestParam String id, @RequestBody Producto producto) {
+    public List<Producto> actualizarProducto(@PathVariable String id, @RequestBody Producto producto) {
         producto.setId(id);
 
         ProductoRequest productoRequest = new ProductoRequest(id, producto);

@@ -29,6 +29,12 @@ public class ProductoReceiver {
     @RabbitListener(queues = "producto-post-queue")
     public List<Producto> procesarCrearProducto(Producto producto) {
         productoRepository.save(producto);
+
+        // Comprobar si se ha creado correctamente el producto
+        if(productoRepository.findById(producto.getId()) == null) {
+            throw new RuntimeException("No se ha creado correctamente el producto " + producto.getNombre());
+        }
+
         System.out.println("Producto creado: " + producto.getId());
         return productoRepository.findAll();
     }

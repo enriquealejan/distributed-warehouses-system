@@ -1,5 +1,7 @@
 package com.empresa.gestion_almacen.models;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
@@ -13,6 +15,7 @@ public class Registro {
     private String id; // MongoDB usa identificadores tipo String
 
     @Field("producto_id") // Referencia al producto por ID
+    @JsonProperty("productoId") // Jackson: mapea el campo JSON "productoId" con este atributo
     private String productoId;
 
     @Field("tipo_movimiento") // Ejemplo: "ENTRADA", "SALIDA"
@@ -22,6 +25,7 @@ public class Registro {
     private int cantidad;
 
     @Field("fecha_movimiento") // Fecha del movimiento
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime fechaMovimiento;
 
     // Getters y Setters
@@ -33,10 +37,12 @@ public class Registro {
         this.id = id;
     }
 
+    @JsonProperty("productoId") // Jackson: mapea con "productoId"
     public String getIdProducto() {
         return productoId;
     }
 
+    @JsonProperty("productoId") // Jackson: mapea con "productoId"
     public void setIdProducto(String idProducto) {
         this.productoId = idProducto;
     }

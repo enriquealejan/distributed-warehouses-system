@@ -28,6 +28,12 @@ public class AlmacenReceiver {
     @RabbitListener(queues = "almacen-post-queue")
     public List<Almacen> procesarCrearAlmacen(Almacen almacen) {
         almacenRepository.save(almacen);
+
+        // Comprobar si se ha creado correctamente el almacen
+        if(almacenRepository.findById(almacen.getId()) == null) {
+            throw new RuntimeException("No se ha creado correctamente el almacen " + almacen.getNombre());
+        }
+
         System.out.println("Almacén creado: " + almacen.getId());
         return almacenRepository.findAll();
     }

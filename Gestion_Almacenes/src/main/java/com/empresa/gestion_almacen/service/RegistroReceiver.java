@@ -29,6 +29,12 @@ public class RegistroReceiver {
     @RabbitListener(queues = "registro-post-queue")
     public List<Registro> procesarCrearRegistro(Registro registro) {
         registroRepository.save(registro);
+
+        // Comprobar si se ha creado correctamente el registro
+        if(registroRepository.findById(registro.getId()) == null) {
+            throw new RuntimeException("No se ha creado correctamente el registro " + registro.getId());
+        }
+
         System.out.println("Registro creado: " + registro.getId());
         return registroRepository.findAll();
     }

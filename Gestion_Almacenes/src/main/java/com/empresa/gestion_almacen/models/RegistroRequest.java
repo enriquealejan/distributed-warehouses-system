@@ -3,18 +3,34 @@ package com.empresa.gestion_almacen.models;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class RegistroRequest {
-    @JsonProperty ("id") private String id;
-    @JsonProperty ("registro") private Registro registro;
 
-    public RegistroRequest(String id, Registro registro){
+    private String id;
+    private Registro registro;
+
+    // Constructor por defecto (necesario para deserializaciÃ³n)
+    public RegistroRequest() {
+    }
+
+    // Constructor adicional opcional
+    public RegistroRequest(String id, Registro registro) {
         this.id = id;
         this.registro = registro;
     }
-    public String getId(){
-        return this.id;
+
+    // Getters y Setters
+    public String getId() {
+        return id;
     }
 
-    public Registro getRegistro(){
-        return this.registro;
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public Registro getRegistro() {
+        return registro;
+    }
+
+    public void setRegistro(Registro registro) {
+        this.registro = registro;
     }
 }

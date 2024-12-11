@@ -4,8 +4,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 
 public class AlmacenRequest{
-    @JsonProperty ("id") private String id;
-    @JsonProperty ("almacen") private Almacen almacen;
+    private String id;
+    private Almacen almacen;
     public AlmacenRequest(){
     }
     public AlmacenRequest(String id, Almacen almacen){
@@ -16,7 +16,15 @@ public class AlmacenRequest{
         return this.id;
     }
 
+    public String setId(String id){
+        return this.id = id;
+    }
+
     public Almacen getAlmacen(){
         return this.almacen;
+    }
+
+    public Almacen setAlmacen(Almacen almacen){
+        return this.almacen = almacen;
     }
 }

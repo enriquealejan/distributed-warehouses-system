@@ -13,6 +13,7 @@ This project is for the final practice of "Programación de Sistemas Distribuido
    cd Docker && chmod +x LaunchApp.sh && ./LaunchApp.sh
    ```
    or (without getting into)
+   
    ```bash
    chmod +x Docker/LaunchApp.sh && ./Docker/LaunchApp.sh
    ```

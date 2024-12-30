@@ -4,6 +4,6 @@ This project is for the final practice of "Programación de Sistemas Distribuido
 ## Introduction
 ## How to run
 1. Installing Docker Engine
-   - **Windows**
-   - **Linux**
-   - **macOS**
+   - **Windows** ➝ https://docs.docker.com/desktop/setup/install/windows-install/
+   - **Linux** ➝ https://docs.docker.com/engine/install/ubuntu/
+   - **macOS** ➝ https://docs.docker.com/desktop/setup/install/mac-install/

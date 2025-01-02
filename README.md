@@ -8,6 +8,7 @@ of the company's warehouses. It has been developed using Spring Boot, RabbitMQ a
    - **Linux** ➝ https://docs.docker.com/engine/install/ubuntu/
    - **macOS** ➝ https://docs.docker.com/desktop/setup/install/mac-install/
 2. Run LaunchApp
+   
    Inside the Docker directory you only need give the script the execution permission
    - For Linux
    

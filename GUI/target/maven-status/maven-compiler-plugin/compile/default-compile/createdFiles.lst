@@ -1,0 +1,4 @@
+com\empresa\modelos\Producto.class
+com\empresa\modelos\Registro.class
+com\empresa\modelos\Almacen.class
+com\empresa\gui\AlmacenGUI.class

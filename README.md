@@ -38,4 +38,4 @@ of the company's warehouses. It has been developed using Spring Boot, RabbitMQ a
    
    Once you execute it, the backend is already running
 
-   3. Run GUI
+3. Run GUI

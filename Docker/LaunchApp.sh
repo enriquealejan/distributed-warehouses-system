@@ -6,7 +6,7 @@ docker pull maven:latest # La versión se puede cambiar
 cd .. # Me voy a la carpeta raíz del proyecto
 
 # Lanzar el contenedor de maven 
-docker run -it --rm --name project_compiler -v Gestion_Almacenes/:/app -w /app maven:latest mvn clean package # -v <source> lo cambias en función de donde se tenga el proyecto
+docker run -it --rm --name project_compiler -v ./Gestion_Almacenes/:/app -w /app maven:latest mvn clean package # -v <source> lo cambias en función de donde se tenga el proyecto
 
 cd Docker # Vuelvo a la carpeta de Docker
 

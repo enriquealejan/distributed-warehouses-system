@@ -5,6 +5,8 @@ import com.empresa.modelos.Producto;
 import com.empresa.modelos.Registro;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -171,6 +173,9 @@ public class AlmacenGUI extends Application {
         TextField stockMinimoField = new TextField();
         stockMinimoField.setPromptText("Stock Mínimo");
 
+        TextField almacenIdField = new TextField();
+        almacenIdField.setPromptText("ID del Almacén");
+
         Button addButton = new Button("Agregar Producto");
         Button updateButton = new Button("Actualizar Producto");
         Button deleteButton = new Button("Eliminar Producto");
@@ -179,23 +184,37 @@ public class AlmacenGUI extends Application {
         TableView<Producto> table = new TableView<>();
 
         TableColumn<Producto, String> idColumn = new TableColumn<>("ID del Producto");
-        idColumn.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(data.getValue().getId()));
+        idColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getId()));
+        idColumn.setMinWidth(150);
 
         TableColumn<Producto, String> nombreColumn = new TableColumn<>("Nombre del Producto");
-        nombreColumn.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(data.getValue().getNombre()));
+        nombreColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getNombre()));
+        nombreColumn.setMinWidth(200);
 
         TableColumn<Producto, String> descripcionColumn = new TableColumn<>("Descripción");
-        descripcionColumn.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(data.getValue().getDescripcion()));
+        descripcionColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getDescripcion()));
+        descripcionColumn.setMinWidth(250);
 
         TableColumn<Producto, Integer> stockColumn = new TableColumn<>("Stock");
-        stockColumn.setCellValueFactory(data -> new javafx.beans.property.SimpleIntegerProperty(data.getValue().getStock()).asObject());
+        stockColumn.setCellValueFactory(data -> new SimpleIntegerProperty(data.getValue().getStock()).asObject());
+        stockColumn.setMinWidth(100);
 
-        table.getColumns().addAll(idColumn, nombreColumn, descripcionColumn, stockColumn);
+        TableColumn<Producto, Integer> stockMinimoColumn = new TableColumn<>("Stock Mínimo");
+        stockMinimoColumn.setCellValueFactory(data -> new SimpleIntegerProperty(data.getValue().getStockMinimo()).asObject());
+        stockMinimoColumn.setMinWidth(120);
 
+        TableColumn<Producto, String> almacenIdColumn = new TableColumn<>("ID del Almacén");
+        almacenIdColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getAlmacenId()));
+        almacenIdColumn.setMinWidth(150);
+
+        table.getColumns().addAll(idColumn, nombreColumn, descripcionColumn, stockColumn, stockMinimoColumn, almacenIdColumn);
+
+        // Configurar eventos de los botones
         addButton.setOnAction(e -> {
             String id = idField.getText();
             String nombre = nombreField.getText();
             String descripcion = descripcionField.getText();
+            String almacenId = almacenIdField.getText();
             int stock;
             int stockMinimo;
 
@@ -207,10 +226,10 @@ public class AlmacenGUI extends Application {
                 return;
             }
 
-            if (!nombre.isEmpty() && !descripcion.isEmpty()) {
+            if (!nombre.isEmpty() && !descripcion.isEmpty() && !almacenId.isEmpty()) {
                 try {
-                    agregarProducto(id, nombre, descripcion, stock, stockMinimo);
-                    limpiarCampos(idField, nombreField, descripcionField, stockField, stockMinimoField);
+                    agregarProducto(id, nombre, descripcion, stock, stockMinimo, almacenId);
+                    limpiarCampos(idField, nombreField, descripcionField, stockField, stockMinimoField, almacenIdField);
                     showAlert(Alert.AlertType.INFORMATION, "Éxito", "Producto agregado exitosamente.");
                     actualizarTablaProductos(table);
                 } catch (Exception ex) {
@@ -218,7 +237,7 @@ public class AlmacenGUI extends Application {
                     ex.printStackTrace();
                 }
             } else {
-                showAlert(Alert.AlertType.WARNING, "Advertencia", "El nombre y la descripción no pueden estar vacíos.");
+                showAlert(Alert.AlertType.WARNING, "Advertencia", "El nombre, la descripción y el ID del almacén no pueden estar vacíos.");
             }
         });
 
@@ -226,6 +245,7 @@ public class AlmacenGUI extends Application {
             String id = idField.getText();
             String nombre = nombreField.getText();
             String descripcion = descripcionField.getText();
+            String almacenId = almacenIdField.getText();
             int stock;
             int stockMinimo;
 
@@ -237,10 +257,10 @@ public class AlmacenGUI extends Application {
                 return;
             }
 
-            if (!id.isEmpty() && !nombre.isEmpty() && !descripcion.isEmpty()) {
+            if (!id.isEmpty() && !nombre.isEmpty() && !descripcion.isEmpty() && !almacenId.isEmpty()) {
                 try {
-                    actualizarProducto(id, nombre, descripcion, stock, stockMinimo);
-                    limpiarCampos(idField, nombreField, descripcionField, stockField, stockMinimoField);
+                    actualizarProducto(id, nombre, descripcion, stock, stockMinimo, almacenId);
+                    limpiarCampos(idField, nombreField, descripcionField, stockField, stockMinimoField, almacenIdField);
                     showAlert(Alert.AlertType.INFORMATION, "Éxito", "Producto actualizado exitosamente.");
                     actualizarTablaProductos(table);
                 } catch (Exception ex) {
@@ -248,7 +268,7 @@ public class AlmacenGUI extends Application {
                     ex.printStackTrace();
                 }
             } else {
-                showAlert(Alert.AlertType.WARNING, "Advertencia", "ID, nombre y descripción son requeridos para actualizar.");
+                showAlert(Alert.AlertType.WARNING, "Advertencia", "ID, nombre, descripción y ID del almacén son requeridos para actualizar.");
             }
         });
 
@@ -258,7 +278,7 @@ public class AlmacenGUI extends Application {
             if (!id.isEmpty()) {
                 try {
                     eliminarProducto(id);
-                    limpiarCampos(idField, nombreField, descripcionField, stockField, stockMinimoField);
+                    limpiarCampos(idField, nombreField, descripcionField, stockField, stockMinimoField, almacenIdField);
                     showAlert(Alert.AlertType.INFORMATION, "Éxito", "Producto eliminado exitosamente.");
                     actualizarTablaProductos(table);
                 } catch (Exception ex) {
@@ -275,7 +295,8 @@ public class AlmacenGUI extends Application {
         VBox layout = new VBox(10);
         layout.setPadding(new Insets(20));
         layout.getChildren().addAll(
-                titleLabel, idField, nombreField, descripcionField, stockField, stockMinimoField,
+                titleLabel, idField, nombreField, descripcionField,
+                stockField, stockMinimoField, almacenIdField,
                 addButton, updateButton, deleteButton, viewButton, table
         );
 
@@ -292,12 +313,18 @@ public class AlmacenGUI extends Application {
         TextField productoIdField = new TextField();
         productoIdField.setPromptText("ID del Producto");
 
-        TextField tipoMovimientoField = new TextField();
-        tipoMovimientoField.setPromptText("Tipo de Movimiento (ENTRADA/SALIDA)");
+        // Botones de radio para tipo de movimiento
+        ToggleGroup tipoMovimientoGroup = new ToggleGroup();
+
+        RadioButton entradaRadio = new RadioButton("ENTRADA");
+        entradaRadio.setToggleGroup(tipoMovimientoGroup);
+        entradaRadio.setSelected(true); // Seleccionado por defecto
+
+        RadioButton salidaRadio = new RadioButton("SALIDA");
+        salidaRadio.setToggleGroup(tipoMovimientoGroup);
 
         TextField cantidadField = new TextField();
         cantidadField.setPromptText("Cantidad");
-
 
         Button addButton = new Button("Agregar Registro");
         Button deleteButton = new Button("Eliminar Registro");
@@ -318,9 +345,6 @@ public class AlmacenGUI extends Application {
         cantidadColumn.setCellValueFactory(data -> new javafx.beans.property.SimpleIntegerProperty(data.getValue().getCantidad()).asObject());
 
         TableColumn<Registro, String> fechaMovimientoColumn = new TableColumn<>("Fecha de Movimiento");
-        //fechaMovimientoColumn.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(data.getValue().getFechaMovimiento().toString()));
-        //fechaMovimientoColumn.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty());
-
         fechaMovimientoColumn.setCellValueFactory(data -> {
             LocalDateTime fecha = data.getValue().getFechaMovimiento();
             return new javafx.beans.property.SimpleStringProperty(fecha != null ? fecha.toString() : "");
@@ -328,10 +352,11 @@ public class AlmacenGUI extends Application {
 
         table.getColumns().addAll(idColumn, productoIdColumn, tipoMovimientoColumn, cantidadColumn, fechaMovimientoColumn);
 
+        // Configurar eventos de los botones
         addButton.setOnAction(e -> {
             String id = idField.getText();
             String productoId = productoIdField.getText();
-            String tipoMovimiento = tipoMovimientoField.getText();
+            String tipoMovimiento = ((RadioButton) tipoMovimientoGroup.getSelectedToggle()).getText(); // Obtener el texto del botón seleccionado
             int cantidad;
 
             try {
@@ -341,9 +366,10 @@ public class AlmacenGUI extends Application {
                 return;
             }
 
-            if (!productoId.isEmpty() && !tipoMovimiento.isEmpty()) {
+            if (!productoId.isEmpty() && tipoMovimiento != null && !tipoMovimiento.isEmpty()) {
                 try {
                     agregarRegistro(id, productoId, tipoMovimiento, cantidad);
+                    limpiarCampos(idField, productoIdField, cantidadField);
                     showAlert(Alert.AlertType.INFORMATION, "Éxito", "Registro agregado exitosamente.");
                     actualizarTablaRegistros(table);
                 } catch (Exception ex) {
@@ -351,7 +377,7 @@ public class AlmacenGUI extends Application {
                     ex.printStackTrace();
                 }
             } else {
-                showAlert(Alert.AlertType.WARNING, "Advertencia", "Todos los campos son obligatorios.");
+                showAlert(Alert.AlertType.WARNING, "Advertencia", "El ID del producto, tipo de movimiento y cantidad son obligatorios.");
             }
         });
 
@@ -361,7 +387,7 @@ public class AlmacenGUI extends Application {
             if (!id.isEmpty()) {
                 try {
                     eliminarRegistro(id);
-                    limpiarCampos(idField, productoIdField, tipoMovimientoField, cantidadField);
+                    limpiarCampos(idField, productoIdField, cantidadField);
                     showAlert(Alert.AlertType.INFORMATION, "Éxito", "Registro eliminado exitosamente.");
                     actualizarTablaRegistros(table);
                 } catch (Exception ex) {
@@ -378,8 +404,9 @@ public class AlmacenGUI extends Application {
         VBox layout = new VBox(10);
         layout.setPadding(new Insets(20));
         layout.getChildren().addAll(
-                titleLabel, idField, productoIdField, tipoMovimientoField, cantidadField,
-                addButton, deleteButton, viewButton, table
+                titleLabel, idField, productoIdField,
+                new Label("Tipo de Movimiento:"), entradaRadio, salidaRadio,
+                cantidadField, addButton, deleteButton, viewButton, table
         );
 
         return layout;
@@ -434,23 +461,25 @@ public class AlmacenGUI extends Application {
         return Arrays.asList(almacenes != null ? almacenes : new Almacen[0]);
     }
 
-    private void agregarProducto(String id, String nombre, String descripcion, int stock, int stockMinimo) {
+    private void agregarProducto(String id, String nombre, String descripcion, int stock, int stockMinimo, String almacenId) {
         Producto nuevoProducto = new Producto();
         if (id != null && !id.isEmpty()) nuevoProducto.setId(id);
         nuevoProducto.setNombre(nombre);
         nuevoProducto.setDescripcion(descripcion);
         nuevoProducto.setStock(stock);
         nuevoProducto.setStockMinimo(stockMinimo);
+        nuevoProducto.setAlmacenId(almacenId);
         restTemplate.postForObject(BASE_URL_PRODUCTO, nuevoProducto, Void.class);
     }
 
-    private void actualizarProducto(String id, String nombre, String descripcion, int stock, int stockMinimo) {
+    private void actualizarProducto(String id, String nombre, String descripcion, int stock, int stockMinimo, String almacenId) {
         Producto productoActualizado = new Producto();
         productoActualizado.setId(id);
         productoActualizado.setNombre(nombre);
         productoActualizado.setDescripcion(descripcion);
         productoActualizado.setStock(stock);
         productoActualizado.setStockMinimo(stockMinimo);
+        productoActualizado.setAlmacenId(almacenId);
         restTemplate.put(BASE_URL_PRODUCTO + "/" + id, productoActualizado);
     }
 

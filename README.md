@@ -41,3 +41,4 @@ of the company's warehouses. It has been developed using Spring Boot, RabbitMQ a
 3. Run GUI
    
    For running the GUI you need to install locally Maven. First you have to download Maven and then include it on environment variables.
+   Once you have installed Maven, you can compile and run the GUI using JavaFX.

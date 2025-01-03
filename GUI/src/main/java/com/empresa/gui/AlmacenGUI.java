@@ -10,6 +10,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.springframework.web.client.RestTemplate;
@@ -70,6 +71,9 @@ public class AlmacenGUI extends Application {
         Button updateButton = new Button("Actualizar Almacén");
         Button deleteButton = new Button("Eliminar Almacén");
         Button viewButton = new Button("Ver Almacenes");
+
+        HBox buttonBox = new HBox(10, addButton, updateButton, deleteButton, viewButton);
+        buttonBox.setPadding(new Insets(10, 0, 10, 0));
 
         TableView<Almacen> table = new TableView<>();
 
@@ -148,7 +152,7 @@ public class AlmacenGUI extends Application {
         layout.setPadding(new Insets(20));
         layout.getChildren().addAll(
                 titleLabel, idField, almacenField, ubicacionField,
-                addButton, updateButton, deleteButton, viewButton, table
+                buttonBox, table
         );
 
         return layout;
@@ -180,6 +184,9 @@ public class AlmacenGUI extends Application {
         Button updateButton = new Button("Actualizar Producto");
         Button deleteButton = new Button("Eliminar Producto");
         Button viewButton = new Button("Ver Productos");
+
+        HBox buttonBox = new HBox(10, addButton, updateButton, deleteButton, viewButton);
+        buttonBox.setPadding(new Insets(10, 0, 10, 0));
 
         TableView<Producto> table = new TableView<>();
 
@@ -297,7 +304,7 @@ public class AlmacenGUI extends Application {
         layout.getChildren().addAll(
                 titleLabel, idField, nombreField, descripcionField,
                 stockField, stockMinimoField, almacenIdField,
-                addButton, updateButton, deleteButton, viewButton, table
+                buttonBox, table
         );
 
         return layout;
@@ -329,6 +336,9 @@ public class AlmacenGUI extends Application {
         Button addButton = new Button("Agregar Registro");
         Button deleteButton = new Button("Eliminar Registro");
         Button viewButton = new Button("Ver Registros");
+
+        HBox buttonBox = new HBox(10, addButton, deleteButton, viewButton);
+        buttonBox.setPadding(new Insets(10, 0, 10, 0));
 
         TableView<Registro> table = new TableView<>();
 
@@ -406,7 +416,7 @@ public class AlmacenGUI extends Application {
         layout.getChildren().addAll(
                 titleLabel, idField, productoIdField,
                 new Label("Tipo de Movimiento:"), entradaRadio, salidaRadio,
-                cantidadField, addButton, deleteButton, viewButton, table
+                cantidadField, buttonBox, table
         );
 
         return layout;

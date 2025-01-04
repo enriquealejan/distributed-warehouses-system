@@ -50,6 +50,14 @@ public class AlmacenGUI extends Application {
             tabPane.getTabs().addAll(almacenTab, productoTab, registroTab);
 
             Scene scene = new Scene(tabPane, 800, 600);
+            URL cssUrl = getClass().getResource("/css/style.css");
+            if (cssUrl == null) {
+                System.err.println("No se encontró el archivo CSS");
+            } else {
+                scene.getStylesheets().add(cssUrl.toExternalForm());
+            }
+
+            scene.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
             primaryStage.setScene(scene);
             primaryStage.setTitle("Gestión de Almacenes, Productos y Registros");
             primaryStage.setOnCloseRequest(e -> Platform.exit());

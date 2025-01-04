@@ -64,10 +64,7 @@ public class ProductoReceiver {
             Producto nuevoProducto = productoRequest.getProducto();
 
             // Update specific fields
-            existente.setNombre(nuevoProducto.getNombre());
-            existente.setDescripcion(nuevoProducto.getDescripcion());
-            existente.setAlmacenId(nuevoProducto.getAlmacenId());
-
+            existente.setStock(nuevoProducto.getStock());
             // Only update registros if it's not empty
             if (nuevoProducto.getRegistros() != null && !nuevoProducto.getRegistros().isEmpty()) {
                 existente.setRegistros(nuevoProducto.getRegistros());

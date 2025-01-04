@@ -85,6 +85,7 @@ public class GestionAlmacenesTest {
         Producto producto = productoRepository.findById("1C").orElseThrow();
 
         Registro registro = new Registro();
+        registro.setId("3C");
         registro.setIdProducto(producto.getId());
         registro.setTipoMovimiento("ENTRADA");
         registro.setCantidad(10);

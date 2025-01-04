@@ -29,6 +29,7 @@ public class RegistroController {
 
     @PostMapping
     public List<Registro> crearRegistro(@RequestBody Registro registro) {
+        System.out.println("Product id (api): " + registro.getIdProducto());
         Object response = sender.sendAndReceive("registro-post-queue", registro);
         if(response instanceof List<?>) {
             return (List<Registro>) response;

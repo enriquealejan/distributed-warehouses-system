@@ -66,7 +66,7 @@ public class AlmacenGUI extends Application {
         titleLabel.setStyle("-fx-font-size: 20px; -fx-font-weight: bold;");
 
         TextField idField = new TextField();
-        idField.setPromptText("ID del Almacén (opcional para agregar)");
+        idField.setPromptText("ID del Almacén");
 
         TextField almacenField = new TextField();
         almacenField.setPromptText("Nombre del Almacén");
@@ -165,12 +165,56 @@ public class AlmacenGUI extends Application {
         return layout;
     }
 
+    private VBox createRegistroLayoutPopUp(String id, int stock, Producto productoActual, Stage registroStage) {
+        Label titleLabel = new Label("Gestión de Registros");
+        titleLabel.setStyle("-fx-font-size: 20px; -fx-font-weight: bold;");
+       
+        TextField idField = new TextField();
+        idField.setPromptText("ID registro");     
+        
+        Button guardarButton = new Button("Guardar Registro");
+        guardarButton.setOnAction(event -> {
+            String tipoMovimiento = "";
+            int cantidad_transaccion = productoActual.getStock() - stock;
+
+            if(cantidad_transaccion < 0){
+                tipoMovimiento = "ENTRADA";
+            }else{
+                tipoMovimiento = "SALIDA";
+            }
+
+            // Crear el registro
+            agregarRegistro(idField.getText(), id, tipoMovimiento, Math.abs(cantidad_transaccion));
+
+            // Actualizar el producto con el nuevo stock
+            try {
+                actualizarProducto(id, stock, productoActual);
+                showAlert(Alert.AlertType.INFORMATION, "Éxito", "Producto actualizado y registro creado exitosamente.");
+            } catch (Exception ex) {
+                showAlert(Alert.AlertType.ERROR, "Error", "No se pudo actualizar el producto: " + ex.getMessage());
+                ex.printStackTrace();
+            }
+
+            registroStage.close();
+        });
+
+        HBox buttonBoxGuardar = new HBox(10, guardarButton); 
+
+        VBox layout = new VBox(10);
+        layout.setPadding(new Insets(20));
+        layout.getChildren().addAll(
+                titleLabel,idField, buttonBoxGuardar
+        );
+
+        return layout;
+    }
+
     private VBox createProductoLayout() {
         Label titleLabel = new Label("Gestión de Productos");
         titleLabel.setStyle("-fx-font-size: 20px; -fx-font-weight: bold;");
 
         TextField idField = new TextField();
-        idField.setPromptText("ID del Producto (opcional para agregar)");
+        idField.setPromptText("ID del Producto");
 
         TextField nombreField = new TextField();
         nombreField.setPromptText("Nombre del Producto");
@@ -261,30 +305,45 @@ public class AlmacenGUI extends Application {
             String descripcion = descripcionField.getText();
             String almacenId = almacenIdField.getText();
             int stock;
-            int stockMinimo;
 
-            try {
-                stock = Integer.parseInt(stockField.getText());
-                stockMinimo = Integer.parseInt(stockMinimoField.getText());
-            } catch (NumberFormatException ex) {
-                showAlert(Alert.AlertType.WARNING, "Advertencia", "Stock y Stock Mínimo deben ser números válidos.");
+            // Buscar el producto actual por su ID
+            List<Producto> productos = obtenerProductos();
+            Producto productoActual = productos.stream()
+                .filter(p -> p.getId().equals(id) && p.getAlmacenId().equals(almacenId))
+                .findFirst()
+                .orElse(null);
+
+            if (productoActual == null) {
+                showAlert(Alert.AlertType.WARNING, "Advertencia", "No se ha encontrado el producto con el ID especificado.");
                 return;
             }
 
-            if (!id.isEmpty() && !nombre.isEmpty() && !descripcion.isEmpty() && !almacenId.isEmpty()) {
-                try {
-                    actualizarProducto(id, nombre, descripcion, stock, stockMinimo, almacenId);
-                    limpiarCampos(idField, nombreField, descripcionField, stockField, stockMinimoField, almacenIdField);
-                    showAlert(Alert.AlertType.INFORMATION, "Éxito", "Producto actualizado exitosamente.");
-                    actualizarTablaProductos(table);
-                } catch (Exception ex) {
-                    showAlert(Alert.AlertType.ERROR, "Error", "No se pudo actualizar el producto: " + ex.getMessage());
-                    ex.printStackTrace();
+            try {
+                stock = Integer.parseInt(stockField.getText());
+            } catch (NumberFormatException ex) {
+                showAlert(Alert.AlertType.WARNING, "Advertencia", "El campo de stock debe ser un número válido.");
+                return;
+            }
+
+            if (!id.isEmpty() && !almacenId.isEmpty()) {
+                if(stock >= productoActual.getStockMinimo()){
+                    // Mostrar ventana emergente para crear un registro
+                    Stage registroStage = new Stage();
+                    registroStage.setTitle("Crear Registro para Actualización");
+
+                    VBox registroPopUp = createRegistroLayoutPopUp(id,stock,productoActual,registroStage);
+
+                    Scene registroScene = new Scene(registroPopUp, 300, 200);
+                    registroStage.setScene(registroScene);
+                    registroStage.show();
+                }else{
+                    showAlert(Alert.AlertType.WARNING, "Advertencia", "El stock no puede ser inferior al stock mínimo.");
                 }
             } else {
-                showAlert(Alert.AlertType.WARNING, "Advertencia", "ID, nombre, descripción y ID del almacén son requeridos para actualizar.");
+                showAlert(Alert.AlertType.WARNING, "Advertencia", "ID e ID del almacén son requeridos para actualizar.");
             }
         });
+
 
         deleteButton.setOnAction(e -> {
             String id = idField.getText();
@@ -321,31 +380,9 @@ public class AlmacenGUI extends Application {
         Label titleLabel = new Label("Gestión de Registros");
         titleLabel.setStyle("-fx-font-size: 20px; -fx-font-weight: bold;");
 
-        TextField idField = new TextField();
-        idField.setPromptText("ID del Registro (opcional para agregar)");
-
-        TextField productoIdField = new TextField();
-        productoIdField.setPromptText("ID del Producto");
-
-        // Botones de radio para tipo de movimiento
-        ToggleGroup tipoMovimientoGroup = new ToggleGroup();
-
-        RadioButton entradaRadio = new RadioButton("ENTRADA");
-        entradaRadio.setToggleGroup(tipoMovimientoGroup);
-        entradaRadio.setSelected(true); // Seleccionado por defecto
-
-        RadioButton salidaRadio = new RadioButton("SALIDA");
-        salidaRadio.setToggleGroup(tipoMovimientoGroup);
-
-        TextField cantidadField = new TextField();
-        cantidadField.setPromptText("Cantidad");
-
-        Button addButton = new Button("Agregar Registro");
-        Button deleteButton = new Button("Eliminar Registro");
         Button viewButton = new Button("Ver Registros");
 
-        HBox buttonBox = new HBox(10, addButton, deleteButton, viewButton);
-        buttonBox.setPadding(new Insets(10, 0, 10, 0));
+        HBox buttonBox = new HBox(10, viewButton);
 
         TableView<Registro> table = new TableView<>();
 
@@ -367,64 +404,14 @@ public class AlmacenGUI extends Application {
             return new javafx.beans.property.SimpleStringProperty(fecha.format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss")));
         });
 
-        table.getColumns().addAll(idColumn, productoIdColumn, tipoMovimientoColumn, cantidadColumn, fechaMovimientoColumn);
-
-        // Configurar eventos de los botones
-        addButton.setOnAction(e -> {
-            String id = idField.getText();
-            String productoId = productoIdField.getText();
-            String tipoMovimiento = ((RadioButton) tipoMovimientoGroup.getSelectedToggle()).getText(); // Obtener el texto del botón seleccionado
-            int cantidad;
-
-            try {
-                cantidad = Integer.parseInt(cantidadField.getText());
-            } catch (NumberFormatException ex) {
-                showAlert(Alert.AlertType.WARNING, "Advertencia", "La cantidad debe ser un número válido.");
-                return;
-            }
-
-            if (!productoId.isEmpty() && tipoMovimiento != null && !tipoMovimiento.isEmpty()) {
-                try {
-                    System.out.println("ID producto (Interfaz): " + productoId);
-                    agregarRegistro(id, productoId, tipoMovimiento, cantidad);
-                    limpiarCampos(idField, productoIdField, cantidadField);
-                    showAlert(Alert.AlertType.INFORMATION, "Éxito", "Registro agregado exitosamente.");
-                    actualizarTablaRegistros(table);
-                } catch (Exception ex) {
-                    showAlert(Alert.AlertType.ERROR, "Error", "No se pudo agregar el registro: " + ex.getMessage());
-                    ex.printStackTrace();
-                }
-            } else {
-                showAlert(Alert.AlertType.WARNING, "Advertencia", "El ID del producto, tipo de movimiento y cantidad son obligatorios.");
-            }
-        });
-
-        deleteButton.setOnAction(e -> {
-            String id = idField.getText();
-
-            if (!id.isEmpty()) {
-                try {
-                    eliminarRegistro(id);
-                    limpiarCampos(idField, productoIdField, cantidadField);
-                    showAlert(Alert.AlertType.INFORMATION, "Éxito", "Registro eliminado exitosamente.");
-                    actualizarTablaRegistros(table);
-                } catch (Exception ex) {
-                    showAlert(Alert.AlertType.ERROR, "Error", "No se pudo eliminar el registro: " + ex.getMessage());
-                    ex.printStackTrace();
-                }
-            } else {
-                showAlert(Alert.AlertType.WARNING, "Advertencia", "El ID es requerido para eliminar un registro.");
-            }
-        });
+        table.getColumns().addAll(idColumn, productoIdColumn, tipoMovimientoColumn, cantidadColumn, fechaMovimientoColumn); 
 
         viewButton.setOnAction(e -> actualizarTablaRegistros(table));
 
         VBox layout = new VBox(10);
         layout.setPadding(new Insets(20));
         layout.getChildren().addAll(
-                titleLabel, idField, productoIdField,
-                new Label("Tipo de Movimiento:"), entradaRadio, salidaRadio,
-                cantidadField, buttonBox, table
+                titleLabel, buttonBox, table
         );
 
         return layout;
@@ -490,15 +477,11 @@ public class AlmacenGUI extends Application {
         restTemplate.postForObject(BASE_URL_PRODUCTO, nuevoProducto, Void.class);
     }
 
-    private void actualizarProducto(String id, String nombre, String descripcion, int stock, int stockMinimo, String almacenId) {
-        Producto productoActualizado = new Producto();
-        productoActualizado.setId(id);
-        productoActualizado.setNombre(nombre);
-        productoActualizado.setDescripcion(descripcion);
-        productoActualizado.setStock(stock);
-        productoActualizado.setStockMinimo(stockMinimo);
-        productoActualizado.setAlmacenId(almacenId);
-        restTemplate.put(BASE_URL_PRODUCTO + "/" + id, productoActualizado);
+    private void actualizarProducto(String id, int stock_nuevo, Producto p_actual) {
+        p_actual.setStock(stock_nuevo);
+        Producto nuevoProducto = p_actual;
+        System.out.println("Stock actual: " + p_actual.getStock() + "; Id: " + id);
+        restTemplate.put(BASE_URL_PRODUCTO + "/" + id, nuevoProducto);
     }
 
     private void eliminarProducto(String id) {

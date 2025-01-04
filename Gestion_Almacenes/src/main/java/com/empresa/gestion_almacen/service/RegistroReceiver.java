@@ -28,6 +28,7 @@ public class RegistroReceiver {
 
     @RabbitListener(queues = "registro-post-queue")
     public List<Registro> procesarCrearRegistro(Registro registro) {
+        System.out.println("Id producto (receiver): " + registro.getIdProducto());
         registroRepository.save(registro);
 
         // Comprobar si se ha creado correctamente el registro

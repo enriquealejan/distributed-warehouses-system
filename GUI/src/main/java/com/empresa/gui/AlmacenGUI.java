@@ -16,6 +16,7 @@ import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.scene.media.Media;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
@@ -26,6 +27,7 @@ import org.springframework.http.ResponseEntity;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.io.File;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
@@ -34,6 +36,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.List;
 import java.util.Random;
+import javafx.scene.media.MediaPlayer;
 
 public class AlmacenGUI extends Application {
 
@@ -189,6 +192,8 @@ public class AlmacenGUI extends Application {
         idField.setPromptText("ID registro");     
         
         Button guardarButton = new Button("🔥Guardar Registro🔥");
+        String soundPath = getClass().getResource("/sounds/videoplayback.m4a").toString();
+        Media sound = new Media(soundPath);
         guardarButton.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-background-color: #ff4500; -fx-text-fill: white;");
         // Efecto de brillo en el botón
         DropShadow glow = new DropShadow();
@@ -220,7 +225,10 @@ public class AlmacenGUI extends Application {
         // Iniciar animaciones
         colorTransition.play();
         shakeTransition.play();
+        MediaPlayer mediaPlayer = new MediaPlayer(sound);
         guardarButton.setOnAction(event -> {
+            mediaPlayer.seek(Duration.ZERO); // Reinicia el sonido
+            mediaPlayer.play();
             String tipoMovimiento = "";
             int cantidad_transaccion = productoActual.getStock() - stock;
 

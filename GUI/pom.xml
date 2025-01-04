@@ -63,6 +63,11 @@
             <artifactId>jackson-databind</artifactId>
             <version>2.15.2</version>
         </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-media</artifactId>
+            <version>21</version> <!-- Cambia por la versión que estás usando -->
+        </dependency>
     </dependencies>
 
     <build>

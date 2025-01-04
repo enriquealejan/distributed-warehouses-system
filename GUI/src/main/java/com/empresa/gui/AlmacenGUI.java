@@ -4,6 +4,7 @@ import com.empresa.modelos.Almacen;
 import com.empresa.modelos.Producto;
 import com.empresa.modelos.Registro;
 import com.empresa.config.ObjectMapperConfig;
+import javafx.animation.*;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -11,9 +12,15 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
+import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.http.ResponseEntity;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -26,6 +33,7 @@ import java.util.List;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.List;
+import java.util.Random;
 
 public class AlmacenGUI extends Application {
 
@@ -180,7 +188,38 @@ public class AlmacenGUI extends Application {
         TextField idField = new TextField();
         idField.setPromptText("ID registro");     
         
-        Button guardarButton = new Button("Guardar Registro");
+        Button guardarButton = new Button("🔥Guardar Registro🔥");
+        guardarButton.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-background-color: #ff4500; -fx-text-fill: white;");
+        // Efecto de brillo en el botón
+        DropShadow glow = new DropShadow();
+        glow.setColor(Color.ORANGE);
+        glow.setRadius(15);
+        guardarButton.setEffect(glow);
+
+        // Contenedor principal
+        Pane root = new Pane(guardarButton);
+        guardarButton.setLayoutX(200);
+        guardarButton.setLayoutY(200);
+
+        // Generar brasas
+        generateEmbers(root, guardarButton);
+
+        // Animación de color
+        FillTransition colorTransition = new FillTransition(Duration.seconds(1.5), new Rectangle());
+        colorTransition.setFromValue(Color.RED);
+        colorTransition.setToValue(Color.YELLOW);
+        colorTransition.setCycleCount(FillTransition.INDEFINITE);
+        colorTransition.setAutoReverse(true);
+
+        // Animación de vibración
+        TranslateTransition shakeTransition = new TranslateTransition(Duration.seconds(0.1), guardarButton);
+        shakeTransition.setByX(2);
+        shakeTransition.setCycleCount(TranslateTransition.INDEFINITE);
+        shakeTransition.setAutoReverse(true);
+
+        // Iniciar animaciones
+        colorTransition.play();
+        shakeTransition.play();
         guardarButton.setOnAction(event -> {
             String tipoMovimiento = "";
             int cantidad_transaccion = productoActual.getStock() - stock;
@@ -567,6 +606,39 @@ public class AlmacenGUI extends Application {
             alert.setContentText(message);
             alert.showAndWait();
         });
+    }
+
+    private void generateEmbers(Pane root, Button button) {
+        Random random = new Random();
+
+        Timeline emberGenerator = new Timeline(new KeyFrame(Duration.millis(200), event -> {
+            // Crear una brasa (círculo pequeño)
+            Circle ember = new Circle(3, Color.ORANGE);
+            ember.setEffect(new DropShadow(5, Color.RED));
+
+            // Colocar la brasa cerca del botón
+            double x = button.getLayoutX() + button.getWidth() / 2 + random.nextInt(50) - 25;
+            double y = button.getLayoutY() + button.getHeight() / 2 + random.nextInt(50) - 25;
+            ember.setLayoutX(x);
+            ember.setLayoutY(y);
+
+            root.getChildren().add(ember);
+
+            // Animar la brasa (sube y se desvanece)
+            TranslateTransition moveUp = new TranslateTransition(Duration.seconds(1), ember);
+            moveUp.setByY(-50);
+
+            FadeTransition fadeOut = new FadeTransition(Duration.seconds(1), ember);
+            fadeOut.setFromValue(1.0);
+            fadeOut.setToValue(0.0);
+
+            ParallelTransition animation = new ParallelTransition(moveUp, fadeOut);
+            animation.setOnFinished(e -> root.getChildren().remove(ember));
+            animation.play();
+        }));
+
+        emberGenerator.setCycleCount(Animation.INDEFINITE);
+        emberGenerator.play();
     }
 
     public static void main(String[] args) {

@@ -3,6 +3,7 @@ package com.empresa.gui;
 import com.empresa.modelos.Almacen;
 import com.empresa.modelos.Producto;
 import com.empresa.modelos.Registro;
+import com.empresa.config.ObjectMapperConfig;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -14,10 +15,16 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.http.ResponseEntity;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
+import java.util.List;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.List;
 
 public class AlmacenGUI extends Application {
@@ -32,7 +39,7 @@ public class AlmacenGUI extends Application {
     }
 
     @Override
-    public void start(Stage primaryStage) {
+    public void start(Stage primaryStage) throws Exception{
         try {
             TabPane tabPane = new TabPane();
 
@@ -357,7 +364,7 @@ public class AlmacenGUI extends Application {
         TableColumn<Registro, String> fechaMovimientoColumn = new TableColumn<>("Fecha de Movimiento");
         fechaMovimientoColumn.setCellValueFactory(data -> {
             LocalDateTime fecha = data.getValue().getFechaMovimiento();
-            return new javafx.beans.property.SimpleStringProperty(fecha != null ? fecha.toString() : "");
+            return new javafx.beans.property.SimpleStringProperty(fecha.format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss")));
         });
 
         table.getColumns().addAll(idColumn, productoIdColumn, tipoMovimientoColumn, cantidadColumn, fechaMovimientoColumn);
@@ -378,6 +385,7 @@ public class AlmacenGUI extends Application {
 
             if (!productoId.isEmpty() && tipoMovimiento != null && !tipoMovimiento.isEmpty()) {
                 try {
+                    System.out.println("ID producto (Interfaz): " + productoId);
                     agregarRegistro(id, productoId, tipoMovimiento, cantidad);
                     limpiarCampos(idField, productoIdField, cantidadField);
                     showAlert(Alert.AlertType.INFORMATION, "Éxito", "Registro agregado exitosamente.");
@@ -511,10 +519,12 @@ public class AlmacenGUI extends Application {
             nuevoRegistro.setCantidad(cantidad);
             nuevoRegistro.setFechaMovimiento(LocalDateTime.now());
 
-            restTemplate.postForObject(BASE_URL_REGISTRO, nuevoRegistro, List.class);
+            ResponseEntity<?> response = restTemplate.postForEntity(BASE_URL_REGISTRO, nuevoRegistro, Object.class);
+            // ResponseEntity<?> response = restTemplate.postForEntity(BASE_URL_REGISTRO, nuevoRegistro, Object.class);
+            System.out.println("Estado de la respuesta: " + response.getStatusCode());
+            System.out.println("Respuesta del servidor: " + response.getBody());
         } catch (Exception e) {
             e.printStackTrace();
-            throw e;
         }
     }
 
@@ -534,11 +544,23 @@ public class AlmacenGUI extends Application {
         }
     }
 
-    private List<Registro> obtenerRegistros() {
-        Registro[] registros = restTemplate.getForObject(BASE_URL_REGISTRO, Registro[].class);
-        return Arrays.asList(registros != null ? registros : new Registro[0]);
-    }
+    private List<Registro> obtenerRegistros() throws Exception{
+                // Configurar conexión HTTP
+        URL url = new URL(BASE_URL_REGISTRO);
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        connection.setRequestMethod("GET");
+        connection.setRequestProperty("Accept", "application/json");
 
+        // Leer respuesta
+        ObjectMapper objectMapper = ObjectMapperConfig.createObjectMapper();
+        List<Registro> registros = objectMapper.readValue(
+                connection.getInputStream(),
+                new TypeReference<List<Registro>>() {}
+        );
+
+        connection.disconnect();
+        return registros;
+    }
 
     private void limpiarCampos(TextField... fields) {
         for (TextField field : fields) {

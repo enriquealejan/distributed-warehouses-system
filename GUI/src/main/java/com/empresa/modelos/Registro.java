@@ -1,10 +1,14 @@
 package com.empresa.modelos;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.LocalDateTime;
 
 public class Registro {
     private String id;
-    private String idProducto;
+
+    @JsonProperty("productoId")
+    private String productoId;
+    
     private String tipoMovimiento; // Puede ser "ENTRADA" o "SALIDA"
     private int cantidad;
     private LocalDateTime fechaMovimiento;
@@ -12,9 +16,9 @@ public class Registro {
     public Registro() {
     }
 
-    public Registro(String id, String idProducto, String tipoMovimiento, int cantidad, LocalDateTime  fechaMovimiento) {
+    public Registro(String id, String productoId, String tipoMovimiento, int cantidad, LocalDateTime  fechaMovimiento) {
         this.id = id;
-        this.idProducto = idProducto;
+        this.productoId = productoId;
         this.tipoMovimiento = tipoMovimiento;
         this.cantidad = cantidad;
         this.fechaMovimiento = fechaMovimiento;
@@ -29,11 +33,12 @@ public class Registro {
     }
 
     public String getIdProducto() {
-        return idProducto;
+        return productoId;
     }
 
     public void setIdProducto(String idProducto) {
-        this.idProducto = idProducto;
+        System.out.println(idProducto);
+        this.productoId = idProducto;
     }
 
     public String getTipoMovimiento() {
@@ -64,7 +69,7 @@ public class Registro {
     public String toString() {
         return "Registro{" +
                 "id='" + id + '\'' +
-                ", idProducto='" + idProducto + '\'' +
+                ", idProducto='" + productoId + '\'' +
                 ", tipoMovimiento='" + tipoMovimiento + '\'' +
                 ", cantidad=" + cantidad +
                 ", fechaMovimiento=" + fechaMovimiento +

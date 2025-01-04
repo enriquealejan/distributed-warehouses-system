@@ -188,7 +188,7 @@ public class AlmacenGUI extends Application {
         TextField idField = new TextField();
         idField.setPromptText("ID registro");     
         
-        Button guardarButton = new Button("🔥󰈸Guardar Registro🔥󰈸");
+        Button guardarButton = new Button("🔥Guardar Registro🔥");
         guardarButton.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-background-color: #ff4500; -fx-text-fill: white;");
         // Efecto de brillo en el botón
         DropShadow glow = new DropShadow();

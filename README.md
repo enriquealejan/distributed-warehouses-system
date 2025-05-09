@@ -35,8 +35,6 @@ This application is intended to ease the management of a company's warehouses. I
 - Docker & Docker Compose
 - PowerShell / Bash scripting
 
----
-
 ## 🚀 How to Run
 
 ### 📦 Prerequisites
@@ -64,9 +62,9 @@ chmod +x Docker/LaunchApp.sh && ./Docker/LaunchApp.sh
 
 First, check if the execution policy allows running scripts:
 
-```powershell
+powershell
 Get-ExecutionPolicy
-```
+
 
 If the output is not `Unrestricted`, run:
 powershell
@@ -123,9 +121,5 @@ This project was developed as a final assignment for the **"Programación Distri
 This project was created for educational purposes and is not distributed under a commercial license.
 
 
-🔧 Guarda este contenido como `README.md` en la raíz de tu repositorio y luego haz:
-bash
-git add README.md
-git commit -m "Update README with corrected execution instructions"
-git push origin main
+
 
